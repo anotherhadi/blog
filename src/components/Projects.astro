@@ -1,0 +1,35 @@
+---
+import { getCollection } from "astro:content";
+import ProjectCard from "./ProjectCard.astro";
+import { ArrowRight } from "@lucide/astro";
+
+const projectEntries = await getCollection("projects");
+---
+
+<section id="projects" class="py-20 px-4">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold mb-4">Check out my latest work</h2>
+      <p class="text-lg text-base-content/70">
+        I enjoy the challenge of reimagining existing programs & scripts in my
+        own unique way. By creating these projects from scratch, I can ensure
+        complete control over every aspect of their design and functionality.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {projectEntries.map((project) => <ProjectCard project={project} />)}
+    </div>
+
+    <div class="text-center mt-12">
+      <a
+        href="https://github.com/anotherhadi"
+        target="_blank"
+        class="btn btn-ghost gap-2"
+      >
+        View All Projects
+        <ArrowRight class="size-4" />
+      </a>
+    </div>
+  </div>
+</section>

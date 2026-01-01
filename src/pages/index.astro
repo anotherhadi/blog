@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
+import Projects from "../components/Projects.astro";
+import Blog from "../components/Blog.astro";
+import Contact from "../components/Contact.astro";
+import { siteConfig } from "../config";
+import avatar from "../../public/avatar.jpg";
+---
+
+<Layout title={`Another Hadi`} description={siteConfig.description}>
+  <main>
+    <Hero
+      name={siteConfig.name}
+      title={siteConfig.title}
+      description={siteConfig.description}
+      avatar={avatar}
+      location={siteConfig.location}
+      socialLinks={siteConfig.socialLinks}
+      gpgKey={siteConfig.gpgKey}
+    />
+
+    <Blog />
+    <Projects />
+    <Contact />
+  </main>
+</Layout>

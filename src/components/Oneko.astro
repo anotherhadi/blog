@@ -1,0 +1,22 @@
+---
+
+---
+
+<script is:inline>
+  function initOneko() {
+    if (!document.getElementById("oneko")) {
+      const script = document.createElement("script");
+      script.src = "/scripts/oneko.js";
+      script.id = "oneko-script";
+      document.body.appendChild(script);
+    }
+  }
+  document.addEventListener("astro:page-load", initOneko);
+</script>
+
+<style is:global>
+  #oneko {
+    z-index: 999;
+    pointer-events: none;
+  }
+</style>

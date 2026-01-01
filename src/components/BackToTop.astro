@@ -1,0 +1,36 @@
+---
+import { ArrowUp } from "lucide-astro";
+---
+
+<button
+  id="back-to-top"
+  class="btn btn-circle btn-primary fixed bottom-6 right-6 z-50 transition-opacity duration-300 opacity-0 invisible"
+  aria-label="Back to top"
+>
+  <ArrowUp />
+</button>
+
+<script>
+  const backToTopBtn = document.getElementById("back-to-top");
+
+  if (backToTopBtn) {
+    // Afficher/Masquer le bouton selon le scroll
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.remove("opacity-0", "invisible");
+        backToTopBtn.classList.add("opacity-100", "visible");
+      } else {
+        backToTopBtn.classList.add("opacity-0", "invisible");
+        backToTopBtn.classList.remove("opacity-100", "visible");
+      }
+    });
+
+    // Action de retour en haut
+    backToTopBtn.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    });
+  }
+</script>

@@ -1,0 +1,57 @@
+---
+import type { CollectionEntry } from "astro:content";
+import TagBadge from "./TagBadge.astro";
+import { Image } from "astro:assets";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+
+function formatDate(date: Date) {
+  const options: Intl.DateTimeFormatOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  };
+  return date.toLocaleDateString("en-US", options);
+}
+---
+
+<article
+  class="card bg-base-100 shadow-xl border border-base-200 rounded-lg hover:shadow-2xl transition-shadow"
+>
+  <figure class="aspect-video">
+    <Image
+      src={post.data.image}
+      alt={post.data.title}
+      class="w-full h-full object-cover"
+      width={600}
+      height={400}
+    />
+  </figure>
+  <div class="card-body">
+    <time class="text-sm text-base-content/60">
+      {formatDate(post.data.publishDate)}
+    </time>
+    <h2 class="card-title hover:text-primary transition-colors">
+      <a href={`/blog/${post.id}`}>{post.data.title}</a>
+    </h2>
+    <p class="text-base-content/80">{post.data.description}</p>
+    {
+      post.data.tags && post.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-2">
+          {post.data.tags.map((tag) => (
+            <TagBadge tag={tag} />
+          ))}
+        </div>
+      )
+    }
+    <div class="card-actions justify-end mt-4">
+      <a href={`/blog/${post.id}`} class="btn btn-primary btn-sm">
+        Read More
+      </a>
+    </div>
+  </div>
+</article>
