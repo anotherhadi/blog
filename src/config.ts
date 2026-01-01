@@ -42,7 +42,7 @@ export const siteConfig: SiteConfig = {
     twitter: "https://x.com/anotherhadi",
     bluesky: "https://bsky.app/profile/hadi1842.bsky.social",
     kofi: "https://ko-fi.com/anotherhadi",
-    medium: "https://medium.com/anotherhadi",
+    medium: "https://medium.com/@anotherhadi",
   },
   gpgKey: "/anotherhadi.asc",
 };
