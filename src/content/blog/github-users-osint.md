@@ -6,9 +6,9 @@ tags: ["osint", "github", "cybersecurity", "profile"]
 publishDate: "2026-01-01"
 ---
 
-In the world of Open-Source Intelligence (OSINT), we often focus on social media platforms like Twitter or LinkedIn. However, developers frequently leave behind much more detailed personal information on **GitHub**.
+In the world of Open-Source Intelligence (OSINT), we often focus on social media platforms like Twitter or LinkedIn. However, developers frequently leave behind much more detailed personal information on **Github**.
 
-Whether you are a recruiter, a security researcher, or a digital investigator, GitHub is a goldmine. Why? Because while a user might choose a cryptic handle like `anotherhadi`, their Git configuration often reveals their real name and email address.
+Whether you are a recruiter, a security researcher, or a digital investigator, Github is a goldmine. Why? Because while a user might choose a cryptic handle like `anotherhadi`, their Git configuration often reveals their real name and email address.
 
 ## Level 1: The Low-Hanging Fruit
 
@@ -16,11 +16,11 @@ Before diving into technical exploits, start with the obvious. Many users forget
 
 - **The Bio & Location**: Even a vague location like "Montpellier, France," combined with a niche tech stack (e.g., "COBOL expert"), significantly narrows down the search.
 - **External Links**: Check the personal website or blog link. Run a WHOIS lookup on that domain to find registration details. Use other OSINT tools and techniques on those websites to pivot further.
-- **The Profile Picture**: Right-click the avatar and use Google Reverse Image Search, Yandex, or other reverse image engines. Developers often use the same professional headshot on GitHub as they do on LinkedIn.
+- **The Profile Picture**: Right-click the avatar and use Google Reverse Image Search, Yandex, or other reverse image engines. Developers often use the same professional headshot on Github as they do on LinkedIn.
 
 ## Level 2: Digging into Commits
 
-This is the most **powerful technique in GitHub OSINT**. When a developer commits code, Git attaches an author name and an email address to that commit. GitHub hides these in the UI, but they remain embedded in the metadata.
+This is the **most effective OSINT** method. While Github masks author names and emails in the web view, this information is permanently embedded in the commit metadata.
 
 ### The `.patch` Method
 
@@ -29,35 +29,35 @@ Find a repository where the target has contributed. Open any commit they made, a
 - **URL**: `https://github.com/{username}/{repo}/commit/{commit_hash}.patch`
 - Look at the `From:` line. It should look like this: `From: John Doe <j.doe@company.com>`
 
-For example, check: `https://github.com/anotherhadi/nixy/commit/e6873e8caae491073d8ab7daad9d2e50a04490ce.patch`
+For example, check: [github.com/anotherhadi/nixy/commit/e6873e8caae491073d8ab7daad9d2e50a04490ce.patch](https://github.com/anotherhadi/nixy/commit/e6873e8caae491073d8ab7daad9d2e50a04490ce.patch)
 
 ### The API Events Method
 
-If you cannot find a recent commit, check their **public activity** stream via the GitHub API.
+If you cannot find a recent commit, check their **public activity** stream via the Github API.
 
 - **Go to**: `https://api.github.com/users/{target_username}/events/public`
 - Search (Ctrl+F) for the word `email`. You will often find the **email address** associated with their `PushEvent` headers, even if they have "Keep my email addresses private" enabled in their current settings.
 
 ### The Email Spoofing Method
 
-While the previous methods help you find an email _from_ a profile, this technique does the opposite: it identifies which GitHub account is linked to a specific email address.
+While the previous methods help you find an email _from_ a profile, this technique does the opposite: it identifies which Github account is linked to a specific email address.
 
 **How it works:**
-GitHub attributes commits based on the email address found in the Git metadata. If you push a commit using a specific email, GitHub will automatically link that commit to the account associated with that address as its **primary email**.
+Github attributes commits based on the email address found in the Git metadata. If you push a commit using a specific email, Github will automatically link that commit to the account associated with that address as its **primary email**.
 
 **The Process:**
 
 1. **Initialize a local repo:** `git init investigation`
 2. **Configure the target email:** `git config user.email "target@example.com"` and `git config user.name "A Username"`
 3. **Create a dummy commit:** `echo "test" > probe.txt && git add . && git commit -m "Probe"`
-4. **Push to a repo you own:** Create a new empty repository on your GitHub account and push the code there.
-5. **Observe the result:** Go to the commit history on the GitHub web interface. The avatar and username of the account linked to that email will appear as the author of the commit.
+4. **Push to a repo you own:** Create a new empty repository on your Github account and push the code there.
+5. **Observe the result:** Go to the commit history on the Github web interface. The avatar and username of the account linked to that email will appear as the author of the commit.
 
-> **Note:** This method only works if the target email is set as the **Primary Email** on the user's account. It is a foolproof way to confirm if an email address you found elsewhere belongs to a specific GitHub user.
+> **Note:** This method only works if the target email is set as the **Primary Email** on the user's account. It is a foolproof way to confirm if an email address you found elsewhere belongs to a specific Github user.
 
 ## Level 3: Technical Metadata
 
-If the email is masked or missing, we can look at the **cryptographic keys** the user uses to communicate with GitHub.
+If the email is masked or missing, we can look at the **cryptographic keys** the user uses to communicate with Github.
 
 ### SSH Keys
 
