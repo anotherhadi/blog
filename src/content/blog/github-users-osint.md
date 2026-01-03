@@ -104,17 +104,17 @@ Its standout features include a **Deep Scan** mode-which clones repositories to 
 ## Conclusion and Protection: How to Stay Anonymous
 
 If you are a developer reading this, you might be feeling exposed.
-Understanding what information about you is publicly visible is the first step to managing your online presence. This guide and tools like [github-recon](https://github.com/anotherhadi/github-recon) can help you identify your own publicly available data on Github. Here’s how you can take steps to protect your privacy and security:
+Understanding what information about you is publicly visible is the **first step to managing your online presence**. This guide and tools like [github-recon](https://github.com/anotherhadi/github-recon) can help you identify your own publicly available data on Github. Here’s how you can take steps to protect your privacy and security:
 
 - **Review your public profile**: Regularly check your Github profile and
   repositories to ensure that you are not unintentionally exposing sensitive
   information.
 - **Manage email exposure**: Use Github's settings to control which email
-  addresses are visible on your profile and in commit history. You can also use
-  a no-reply email address for commits, and an
+  addresses are visible on your profile and in commit history. You can also **use
+  a no-reply email** address for commits, and an
   [alias email](https://proton.me/support/addresses-and-aliases) for your
   account. Delete/modify any sensitive information in your commit history.
-- **Be Mindful of Repository Content**: Avoid including sensitive information in
+- **Be Mindful of Repository Content**: **Avoid including sensitive information** in
   your repositories, such as API keys, passwords, emails or personal data. Use
   `.gitignore` to exclude files that contain sensitive information.
 
