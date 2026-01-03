@@ -38,6 +38,10 @@ If you cannot find a recent commit, check their **public activity** stream via t
 - **Go to**: `https://api.github.com/users/{target_username}/events/public`
 - Search (Ctrl+F) for the word `email`. You will often find the **email address** associated with their `PushEvent` headers, even if they have "Keep my email addresses private" enabled in their current settings.
 
+## The Verification Loop: Linking Email to Account
+
+If you have found an email address and want to be 100% sure it belongs to a specific Github profile, you can use Github’s own attribution engine against itself.
+
 ### The Email Spoofing Method
 
 While the previous methods help you find an email _from_ a profile, this technique does the opposite: it identifies which Github account is linked to a specific email address.
@@ -54,6 +58,17 @@ Github attributes commits based on the email address found in the Git metadata. 
 5. **Observe the result:** Go to the commit history on the Github web interface. The avatar and username of the account linked to that email will appear as the author of the commit.
 
 > **Note:** This method only works if the target email is set as the **Primary Email** on the user's account. It is a foolproof way to confirm if an email address you found elsewhere belongs to a specific Github user.
+
+### The Search Index: Finding Hidden Contributions
+
+Even if an email address is not listed on a user's profile, it may still be indexed within Github's global search.
+Github allows you to filter search results by the metadata fields of a commit.
+This is particularly useful if the target has **contributed to public repositories** using their real email.
+
+You can use these specific qualifiers in the **Github search bar** (select the "Commits" tab):
+
+- `author-email:target@example.com`: Finds commits where the target is the original author.
+- `committer-email:target@example.com`: Finds commits where the target was the one who committed the code (sometimes different from the author).
 
 ## Level 3: Technical Metadata
 
@@ -112,3 +127,9 @@ to scan your repositories specifically for exposed secrets and tokens.
 - [No-reply email address](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address)
 
 In OSINT, the best hidden secrets are the ones we forget we ever shared. Happy hunting!
+
+---
+
+If you enjoyed this guide, please like and share it! Your support helps me create more infosec & OSINT content.
+
+Have questions or feedback? Feel free to reach out: anotherhadi.clapped234[at]passmail.net
