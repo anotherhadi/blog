@@ -39,8 +39,8 @@ export const siteConfig: SiteConfig = {
   location: "🇫🇷 France",
   socialLinks: {
     github: "https://github.com/anotherhadi",
-    twitter: "https://x.com/anotherhadi",
-    bluesky: "https://bsky.app/profile/hadi1842.bsky.social",
+    twitter: "",
+    bluesky: "",
     kofi: "https://ko-fi.com/anotherhadi",
     medium: "https://medium.com/@anotherhadi",
   },
