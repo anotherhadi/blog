@@ -11,6 +11,11 @@ export async function GET(context: APIContext) {
     pubDate: post.data.publishDate,
     description: post.data.description,
     link: `/blog/${post.id}/`,
+    enclosure: {
+      url: new URL(post.data.image.src, context.site).toString(),
+      length: 0,
+      type: "image/png",
+    },
   }));
 
   const projectItems = projects.map((project) => ({
@@ -18,6 +23,11 @@ export async function GET(context: APIContext) {
     pubDate: new Date(),
     description: project.data.description,
     link: `/projects/${project.id}/`,
+    enclosure: {
+      url: new URL(project.data.image.src, context.site).toString(),
+      length: 0,
+      type: "image/png",
+    },
   }));
 
   const allItems = [...blogItems, ...projectItems].sort(
@@ -27,7 +37,7 @@ export async function GET(context: APIContext) {
   return rss({
     title: "Another Hadi",
     description:
-    "Thoughts, insights, and tutorials on cybersecurity, OSINT, and technology.",
+      "Thoughts, insights, and tutorials on cybersecurity, OSINT, and technology.",
     site: context.site!,
     items: allItems,
     customData: `<language>en</language>`,
