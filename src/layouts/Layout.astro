@@ -63,6 +63,14 @@ const origin = Astro.url.origin;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`${origin}/images/og_home.png`} />
+
+    <!-- RSS Feed -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Another Hadi RSS Feed"
+      href="/rss.xml"
+    />
   </head>
   <body class="min-h-screen">
     <slot />
