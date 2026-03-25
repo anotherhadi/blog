@@ -11,7 +11,7 @@
 # Another Hadi's Blog
 
 My personal portfolio & blog; built with **Astro**, **Tailwind CSS** and **DaisyUI**.
-Live at [hadi.diy](https://hadi.diy).
+Live at [hadi.icu](https://hadi.icu).
 
 Started from [bloomfolio](https://github.com/lauroguedes/bloomfolio), thanks for this great project!
 

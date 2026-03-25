@@ -12,7 +12,7 @@ When a manufacturer ships a router, a camera, or a piece of software, it needs t
 
 _The problem?_ Most users never change them. Whether out of convenience, lack of awareness, or simply because the service "works fine as-is", these factory-set credentials often remain active long after deployment.. turning a minor convenience into a serious **security hole**.
 
-To help security researchers and pentesters quickly identify these exposure points, I built **[default-creds](https://default-creds.hadi.diy)**. It's an open-source, community-driven database of default credentials. Just search for a device or service, and you'll instantly get its known factory-set username and password. It also comes with a public API, documented at [default-creds.hadi.diy/api-docs](https://default-creds.hadi.diy/api-docs).
+To help security researchers and pentesters quickly identify these exposure points, I built **[default-creds](https://default-creds.hadi.icu)**. It's an open-source, community-driven database of default credentials. Just search for a device or service, and you'll instantly get its known factory-set username and password. It also comes with a public API, documented at [default-creds.hadi.icu/api-docs](https://default-creds.hadi.icu/api-docs).
 
 ## Real-world impact
 
@@ -36,11 +36,11 @@ Default credentials aren't just a consumer problem. Enterprises, developers, and
 
 1. **Change default credentials immediately.** The moment you deploy a new device or service, changing the default username and password should be the first thing you do; before it ever touches a production network.
 2. **Use strong, unique passwords.** Replacing `admin:admin` with `admin:admin123` doesn't count. Use a password manager to generate and store proper credentials for each service.
-3. **Audit your infrastructure.** You can't fix what you don't know about. Regularly scan your own systems for services still running on default credentials: this is exactly the kind of task [default-creds](https://default-creds.hadi.diy/) is built for.
+3. **Audit your infrastructure.** You can't fix what you don't know about. Regularly scan your own systems for services still running on default credentials: this is exactly the kind of task [default-creds](https://default-creds.hadi.icu/) is built for.
 
 ### For developers
 
-1. **Never ship with hardcoded default credentials.** A default password baked into your codebase is a vulnerability waiting to be exploited (and it will end up in databases like [default-creds](https://default-creds.hadi.diy) :p )
+1. **Never ship with hardcoded default credentials.** A default password baked into your codebase is a vulnerability waiting to be exploited (and it will end up in databases like [default-creds](https://default-creds.hadi.icu) :p )
 2. **Force a password change on first launch.** If your software needs a default to function, make it temporary. Block access until the user has set their own credentials.
 3. **Generate a random password instead.** Even better: skip the default entirely. Generate a strong, unique password at install time and print it once in the console or the setup logs. The user still should change this password.
 

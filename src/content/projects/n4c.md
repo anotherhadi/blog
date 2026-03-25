@@ -3,7 +3,7 @@ title: "Nix 4 cyber"
 description: "A modular, open‑source toolkit & knowledge-base for cyber‑security professionals built with nix & markdown, for CTF, OSINT or Pentest."
 image: "../../../public/images/projects/n4c.png"
 tags: ["nix", "ctf", "cybersecurity", "cheatsheets"]
-url: "https://n4c.hadi.diy"
+url: "https://n4c.hadi.icu"
 sourceLink: "https://github.com/nix4cyber/n4c"
 ---
 
@@ -19,9 +19,9 @@ N4C (**nix4cyber**) is a personal knowledge-base and toolbox for CTF (capture th
 
 It combines three core components:
 
-- [Nix-based shells](https://n4c.hadi.diy/shells): pre-configured environments for specific security domains (web, cracking, networking, forensic, ...).
-- [Cheat‑sheets](https://n4c.hadi.diy/cheatsheets/cheatsheets): quick reference guides organized by category.
-- [CTF write‑ups](https://n4c.hadi.diy/writeups): markdown-formatted reports of challenges we've solved.
+- [Nix-based shells](https://n4c.hadi.icu/shells): pre-configured environments for specific security domains (web, cracking, networking, forensic, ...).
+- [Cheat‑sheets](https://n4c.hadi.icu/cheatsheets/cheatsheets): quick reference guides organized by category.
+- [CTF write‑ups](https://n4c.hadi.icu/writeups): markdown-formatted reports of challenges we've solved.
 
 All content is served through a static website built with [Hugo](https://gohugo.io/) and the [Doks](https://github.com/DELIGHT-LABS/hugo-theme-doks) (<3) theme, hosted on Netlify. The project is fully open‑source under the MIT license and lives on GitHub.
 
@@ -34,9 +34,9 @@ You can then start a shell with the following command:
 nix develop github:nix4cyber/n4c#<toolkit>
 ```
 
-You could also install the alias `n4c` ([see here](https://n4c.hadi.diy/shells#alias)) and only type `n4c <toolkit>`
+You could also install the alias `n4c` ([see here](https://n4c.hadi.icu/shells#alias)) and only type `n4c <toolkit>`
 
-More informations about shells & toolkits [here](https://n4c.hadi.diy/shells)
+More informations about shells & toolkits [here](https://n4c.hadi.icu/shells)
 
 ### Example
 

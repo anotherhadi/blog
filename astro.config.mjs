@@ -6,7 +6,11 @@ import mdx from '@astrojs/mdx';
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://hadi.diy",
+  image: {
+    service: { entrypoint: 'astro/assets/services/noop' }
+  },
+  site: "https://hadi.icu",
+  output: 'static',
   integrations: [mdx()],
   vite: {
     plugins: [tailwindcss()]
