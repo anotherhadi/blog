@@ -2,9 +2,8 @@
 import Layout from "../../layouts/Layout.astro";
 import GiteaProjectCard from "../../components/GiteaProjectCard.astro";
 import { ChevronLeft } from "@lucide/astro";
-import { fetchGiteaRepos } from "../../lib/gitea";
 
-const repos = await fetchGiteaRepos();
+import repos from "../../data/repos.json";
 ---
 
 <Layout

@@ -1,3 +1,6 @@
+import { mkdir } from "node:fs/promises";
+import { join } from "node:path";
+
 export interface GiteaRepo {
   id: number;
   name: string;
@@ -77,3 +80,24 @@ export async function fetchGiteaRepos(): Promise<GiteaRepoWithMirrors[]> {
 export function getBannerUrl(repo: GiteaRepo): string {
   return `${GITEA_BASE}/${repo.full_name}/raw/branch/main/.github/assets/banner.png`;
 }
+
+async function main() {
+  console.log("Fetching repos from Gitea...");
+  const rawRepos = await fetchGiteaRepos();
+  const repos = rawRepos.map(repo => ({
+    ...repo,
+    banner_url: `${GITEA_BASE}/${repo.full_name}/raw/branch/main/.github/assets/banner.png`
+  }));
+
+  const dataDir = join(process.cwd(), "src/data");
+  await mkdir(dataDir, { recursive: true });
+
+  await Bun.write(
+    join(dataDir, "repos.json"),
+    JSON.stringify(repos, null, 2)
+  );
+
+  console.log(`Saved ${repos.length} repos to src/data/repos.json`);
+}
+
+main().catch(console.error);

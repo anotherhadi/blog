@@ -1,10 +1,9 @@
 ---
 import GiteaProjectCard from "./GiteaProjectCard.astro";
 import { ArrowRight } from "@lucide/astro";
-import { fetchGiteaRepos } from "../lib/gitea";
+import repos from "../data/repos.json";
 
-const repos = await fetchGiteaRepos();
-const latestRepos = repos.slice(0, 3); // 3 plus récents sur la homepage
+const latestRepos = repos.slice(0, 3);
 ---
 
 <section id="projects" class="py-20 px-4">

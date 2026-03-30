@@ -1,14 +1,22 @@
 ---
-import type { GiteaRepoWithMirrors } from "../lib/gitea";
-import { getBannerUrl } from "../lib/gitea";
 import { ExternalLink, ChevronDown } from "@lucide/astro";
 
 interface Props {
-  repo: GiteaRepoWithMirrors;
+  repo: {
+    name: string;
+    description: string;
+    html_url: string;
+    website: string;
+    topics: string[];
+    banner_url: string;
+    mirrors: {
+      github?: string;
+      gitlab?: string;
+    };
+  };
 }
 
 const { repo } = Astro.props;
-const bannerUrl = getBannerUrl(repo);
 
 const platforms = [
   ...(repo.mirrors.github ? [{ label: "GitHub", url: repo.mirrors.github }] : []),
@@ -24,7 +32,7 @@ const hasMultiplePlatforms = platforms.length > 1;
 >
   <figure class="aspect-video bg-base-200 overflow-hidden">
     <img
-      src={bannerUrl}
+      src={repo.banner_url}
       alt={repo.name}
       class="w-full h-full object-cover"
       onerror="this.parentElement.style.display='none'"
