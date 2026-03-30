@@ -1,7 +1,6 @@
 ---
-import { ArrowRight, Coffee, FolderCode, Key, Newspaper } from "@lucide/astro";
+import { ArrowRight, FolderCode, Key, Rss } from "@lucide/astro";
 import { Image } from "astro:assets";
-import { Rss } from "lucide-astro";
 
 interface Props {
   name: string;
@@ -50,7 +49,7 @@ const { name, title, description, avatar, location, socialLinks, gpgKey, rssFeed
       </p>
       {
         socialLinks && (
-          <div class="flex gap-4">
+          <div class="flex flex-wrap gap-4">
             {socialLinks.github && (
               <div class="tooltip" data-tip="Github">
                 <a
@@ -334,7 +333,7 @@ const { name, title, description, avatar, location, socialLinks, gpgKey, rssFeed
         )
       }
 
-      <div class="mt-12 flex gap-5">
+      <div class="mt-12 flex flex-wrap gap-5">
         <a href="/blog" class="btn btn-ghost gap-2">
           Blog Posts
           <ArrowRight class="size-4" />
