@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Coffee, FolderCode, Key, Newspaper } from "@lucide/astro";
 import { Image } from "astro:assets";
+import { Rss } from "lucide-astro";
 
 interface Props {
   name: string;
@@ -22,9 +23,10 @@ interface Props {
     codetips?: string;
   };
   gpgKey?: string;
+  rssFeed?: string;
 }
 
-const { name, title, description, avatar, location, socialLinks, gpgKey } =
+const { name, title, description, avatar, location, socialLinks, gpgKey, rssFeed } =
   Astro.props;
 ---
 
@@ -313,6 +315,18 @@ const { name, title, description, avatar, location, socialLinks, gpgKey } =
                   target="_blank"
                 >
                   <FolderCode class="size-6" />
+                </a>
+              </div>
+            )}
+            {rssFeed && (
+              <div class="tooltip" data-tip="RSS Feed">
+                <a
+                  href={rssFeed}
+                  class="btn btn-circle btn-ghost"
+                  aria-label="RSS Feed"
+                  target="_blank"
+                >
+                  <Rss class="size-6" />
                 </a>
               </div>
             )}

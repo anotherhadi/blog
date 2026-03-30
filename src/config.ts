@@ -26,6 +26,7 @@ export interface SiteConfig {
   location: string;
   socialLinks: SocialLinks;
   gpgKey?: string;
+  rssFeed?: string;
 }
 
 /**
@@ -34,7 +35,7 @@ export interface SiteConfig {
  */
 export const siteConfig: SiteConfig = {
   name: "Hadi",
-  title: "Infosec engineer.",
+  title: "@anotherhadi - Infosec engineer.",
   description:
     "Infosec engineer passionate about Linux/NixOS, blockchains, OSINT & FOSS. Hacking with Go, exploring open tech, and contributing whenever I can 🐧",
   avatar: "/avatar.png",
@@ -49,4 +50,5 @@ export const siteConfig: SiteConfig = {
     medium: "https://medium.com/@anotherhadi",
   },
   gpgKey: "/anotherhadi.asc",
+  rssFeed: "https://hadi.icu/rss.xml",
 };

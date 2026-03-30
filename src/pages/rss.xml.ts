@@ -4,7 +4,6 @@ import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
   const blog = await getCollection("blog");
-  const projects = await getCollection("projects");
 
   const blogItems = blog.map((post) => ({
     title: post.data.title,
@@ -18,24 +17,12 @@ export async function GET(context: APIContext) {
     },
   }));
 
-  const projectItems = projects.map((project) => ({
-    title: `[Project] ${project.data.title}`,
-    pubDate: new Date(),
-    description: project.data.description,
-    link: `/projects/${project.id}/`,
-    enclosure: {
-      url: new URL(project.data.image.src, context.site).toString(),
-      length: 0,
-      type: "image/png",
-    },
-  }));
-
-  const allItems = [...blogItems, ...projectItems].sort(
+  const allItems = [...blogItems].sort(
     (a, b) => b.pubDate.getTime() - a.pubDate.getTime(),
   );
 
   return rss({
-    title: "Another Hadi",
+    title: "Another Hadi - Blog posts",
     description:
       "Thoughts, insights, and tutorials on cybersecurity, OSINT, and technology.",
     site: context.site!,
