@@ -1,9 +1,10 @@
 ---
-import { getCollection } from "astro:content";
-import ProjectCard from "./ProjectCard.astro";
+import GiteaProjectCard from "./GiteaProjectCard.astro";
 import { ArrowRight } from "@lucide/astro";
+import { fetchGiteaRepos } from "../lib/gitea";
 
-const projectEntries = await getCollection("projects");
+const repos = await fetchGiteaRepos();
+const latestRepos = repos.slice(0, 3); // 3 plus récents sur la homepage
 ---
 
 <section id="projects" class="py-20 px-4">
@@ -12,21 +13,16 @@ const projectEntries = await getCollection("projects");
       <h2 class="text-4xl font-bold mb-4">Check out my latest work</h2>
       <p class="text-lg text-base-content/70">
         I enjoy the challenge of reimagining existing programs & scripts in my
-        own unique way. By creating these projects from scratch, I can ensure
-        complete control over every aspect of their design and functionality.
+        own unique way.
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {projectEntries.map((project) => <ProjectCard project={project} />)}
+      {latestRepos.map((repo) => <GiteaProjectCard repo={repo} />)}
     </div>
 
     <div class="text-center mt-12">
-      <a
-        href="https://github.com/anotherhadi"
-        target="_blank"
-        class="btn btn-ghost gap-2"
-      >
+      <a href="/projects" class="btn btn-ghost gap-2">
         View All Projects
         <ArrowRight class="size-4" />
       </a>

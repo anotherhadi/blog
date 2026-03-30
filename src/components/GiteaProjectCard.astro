@@ -1,0 +1,101 @@
+---
+import type { GiteaRepoWithMirrors } from "../lib/gitea";
+import { getBannerUrl } from "../lib/gitea";
+import { ExternalLink, ChevronDown } from "@lucide/astro";
+
+interface Props {
+  repo: GiteaRepoWithMirrors;
+}
+
+const { repo } = Astro.props;
+const bannerUrl = getBannerUrl(repo);
+
+const platforms = [
+  ...(repo.mirrors.github ? [{ label: "GitHub", url: repo.mirrors.github }] : []),
+  ...(repo.mirrors.gitlab ? [{ label: "GitLab", url: repo.mirrors.gitlab }] : []),
+  { label: "Gitea", url: repo.html_url },
+];
+
+const hasMultiplePlatforms = platforms.length > 1;
+---
+
+<article
+  class="card bg-base-100 shadow-xl border border-base-200 rounded-lg hover:shadow-2xl transition-shadow"
+>
+  <figure class="aspect-video bg-base-200 overflow-hidden">
+    <img
+      src={bannerUrl}
+      alt={repo.name}
+      class="w-full h-full object-cover"
+      onerror="this.parentElement.style.display='none'"
+    />
+  </figure>
+
+  <div class="card-body">
+    <h2 class="card-title hover:text-primary transition-colors">
+      <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
+        {repo.name}
+      </a>
+    </h2>
+
+    {repo.description && (
+      <p class="text-base-content/80">{repo.description}</p>
+    )}
+
+    <div class="flex flex-wrap gap-2 mt-2">
+      {repo.topics.map((topic) => (
+        <span class="badge badge-sm rounded-sm badge-soft badge-accent">
+          {topic}
+        </span>
+      ))}
+    </div>
+
+    <div class="card-actions justify-end mt-4 gap-2">
+      {repo.website && (
+        
+        <a
+          href={repo.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-soft btn-sm gap-1"
+        >
+          <ExternalLink class="size-4" />
+          Website
+        </a>
+      )}
+
+      {hasMultiplePlatforms ? (
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-primary btn-sm gap-1">
+            <ExternalLink class="size-4" />
+            View Source
+            <ChevronDown class="size-3" />
+          </div>
+          <ul
+            tabindex="0"
+            class="dropdown-content menu bg-base-100 rounded-xl z-10 w-36 p-1.5 shadow border border-base-200 text-sm"
+          >
+            {platforms.map(({ label, url }) => (
+              <li>
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        
+        <a
+          href={repo.html_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary btn-sm gap-1"
+        >
+          <ExternalLink class="size-4" />
+          View on Gitea
+        </a>
+      )}
+    </div>
+  </div>
+</article>

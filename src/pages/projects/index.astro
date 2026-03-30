@@ -1,11 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getCollection } from "astro:content";
-import ProjectCard from "../../components/ProjectCard.astro";
+import GiteaProjectCard from "../../components/GiteaProjectCard.astro";
 import { ChevronLeft } from "@lucide/astro";
-import { ArrowRight } from "lucide-astro";
+import { fetchGiteaRepos } from "../../lib/gitea";
 
-const projects = await getCollection("projects");
+const repos = await fetchGiteaRepos();
 ---
 
 <Layout
@@ -13,17 +12,14 @@ const projects = await getCollection("projects");
   description="Explore my latest projects and work"
 >
   <main class="max-w-6xl mx-auto px-4 py-20">
-    <!-- Header -->
     <div class="text-center mb-16">
       <h1 class="text-5xl font-bold mb-4">Projects</h1>
       <p class="text-xl text-base-content/70">
         I enjoy the challenge of reimagining existing programs & scripts in my
-        own unique way. By creating these projects from scratch, I can ensure
-        complete control over every aspect of their design and functionality.
+        own unique way.
       </p>
     </div>
 
-    <!-- Back to Home -->
     <div class="mb-8">
       <a href="/" class="btn btn-ghost btn-sm">
         <ChevronLeft size={18} />
@@ -31,32 +27,20 @@ const projects = await getCollection("projects");
       </a>
     </div>
 
-    <!-- Projects Grid -->
     {
-      projects.length === 0 ? (
+      repos.length === 0 ? (
         <div class="text-center py-20">
           <p class="text-2xl text-base-content/60">
-            No projects yet. Check back soon!
+            No projects found. Check back soon!
           </p>
         </div>
       ) : (
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project) => (
-            <ProjectCard project={project} />
+          {repos.map((repo) => (
+            <GiteaProjectCard repo={repo} />
           ))}
         </div>
       )
     }
-
-    <div class="text-center mt-12">
-      <a
-        href="https://github.com/anotherhadi"
-        target="_blank"
-        class="btn btn-ghost gap-2"
-      >
-        View All Projects
-        <ArrowRight class="size-4" />
-      </a>
-    </div>
   </main>
 </Layout>

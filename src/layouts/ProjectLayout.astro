@@ -21,7 +21,7 @@ const { title, description, image, tags, demoLink, url, sourceLink } =
 <Layout title={`${title} - Another Hadi`} description={description}>
   <article class="max-w-4xl mx-auto px-4 py-20">
     <!-- Back button -->
-    <div class="mb-8">
+    <div class="mb-8 flex flex-wrap justify-between gap-5">
       <a href="/projects" class="btn btn-ghost btn-sm">
         <ChevronLeft size={18} />
         Back to Projects
@@ -124,7 +124,7 @@ const { title, description, image, tags, demoLink, url, sourceLink } =
     <!-- Back to projects link -->
     <div class="flex justify-center gap-2 mt-12">
       <div class="flex gap-3 justify-center flex-wrap text-sm">
-        <a href="https://github.com/anotherhadi" class="link link-hover"
+        <a href="/projects" class="link link-hover"
           >View All Projects</a
         >
         <span class="text-base-content/30">•</span>

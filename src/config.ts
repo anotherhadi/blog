@@ -3,6 +3,8 @@
  */
 export interface SocialLinks {
   github?: string;
+  gitlab?: string;
+  gitea?: string;
   linkedin?: string;
   twitter?: string;
   bluesky?: string;
@@ -39,6 +41,8 @@ export const siteConfig: SiteConfig = {
   location: "🇫🇷 France",
   socialLinks: {
     github: "https://github.com/anotherhadi",
+    gitlab: "https://gitlab.com/anotherhadi",
+    gitea: "https://git.hadi.icu",
     twitter: "",
     bluesky: "",
     kofi: "https://ko-fi.com/anotherhadi",
