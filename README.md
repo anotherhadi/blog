@@ -15,6 +15,8 @@ Live at [hadi.icu](https://hadi.icu/?utm_source=github&utm_medium=readme).
 
 Started from [bloomfolio](https://github.com/lauroguedes/bloomfolio), thanks for this great project!
 
+![screenshot](./.github/assets/banner.png)
+
 ## Overview
 
 A fast, static personal website featuring:
