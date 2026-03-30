@@ -14,5 +14,9 @@ export default defineConfig({
   integrations: [mdx()],
   vite: {
     plugins: [tailwindcss()]
-  }
+  },
+  prefetch: {
+    prefetchAll: false,
+    defaultStrategy: 'tap'
+  },
 });
