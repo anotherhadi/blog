@@ -42,7 +42,7 @@ export const siteConfig: SiteConfig = {
   location: "🇫🇷 France",
   socialLinks: {
     github: "https://github.com/anotherhadi",
-    gitlab: "https://gitlab.com/anotherhadi",
+    gitlab: "https://gitlab.com/anotherhadi_mirror",
     gitea: "https://git.hadi.icu",
     twitter: "",
     bluesky: "",

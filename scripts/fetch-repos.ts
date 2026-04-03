@@ -28,7 +28,7 @@ export interface GiteaRepoWithMirrors extends GiteaRepo {
 const GITEA_BASE = "https://git.hadi.icu";
 const GITEA_USER = "anotherhadi";
 const GITHUB_USER = "anotherhadi";
-const GITLAB_USER = "anotherhadi";
+const GITLAB_USER = "anotherhadi_mirror";
 
 async function checkMirrors(repoName: string): Promise<RepoMirrors> {
   const mirrors: RepoMirrors = {};
