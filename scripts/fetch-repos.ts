@@ -29,6 +29,7 @@ const GITEA_BASE = "https://git.hadi.icu";
 const GITEA_USER = "anotherhadi";
 const GITHUB_USER = "anotherhadi";
 const GITLAB_USER = "anotherhadi_mirror";
+const SKIP_REPOS = ["anotherhadi"];
 
 async function checkMirrors(repoName: string): Promise<RepoMirrors> {
   const mirrors: RepoMirrors = {};
@@ -56,8 +57,13 @@ export async function fetchGiteaRepos(): Promise<GiteaRepoWithMirrors[]> {
     if (!res.ok) throw new Error(`Gitea API: ${res.status}`);
 
     const repos: GiteaRepo[] = await res.json();
+
     const filtered = repos
-      .filter((r) => !r.fork && !r.private)
+      .filter((r) =>
+        !r.fork &&
+        !r.private &&
+        !SKIP_REPOS.includes(r.name)
+      )
       .sort(
         (a, b) =>
           new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
