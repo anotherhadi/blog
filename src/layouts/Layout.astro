@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import Oneko from "../components/Oneko.astro";
 import Console from "../components/Console.astro";
+import Navbar from "../components/Navbar.astro";
 
 interface Props {
   title?: string;
@@ -72,14 +73,16 @@ const origin = Astro.url.origin;
       href="/rss.xml"
     />
 
-    <script 
-      defer 
-      src="https://umami.hadi.icu/script.js" 
+    <script
+      is:inline
+      defer
+      src="https://umami.hadi.icu/script.js"
       data-website-id="91b0c3a1-130a-4974-be47-078bc092cec8"
-      data-domains="hadi.icu,www.hadi.icu" 
+      data-domains="hadi.icu,www.hadi.icu"
     ></script>
   </head>
-  <body class="min-h-screen">
+  <body class="min-h-screen pt-12">
+    <Navbar />
     <slot />
 
     <Oneko />

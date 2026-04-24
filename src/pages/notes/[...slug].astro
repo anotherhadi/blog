@@ -1,0 +1,553 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { Shield, ChevronLeft, List, PanelRight } from "@lucide/astro";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("notes");
+  return notes.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const allNotes = await getCollection("notes");
+const sortedNotes = allNotes.sort((a, b) => a.data.title.localeCompare(b.data.title));
+const categories = [...new Set(allNotes.map((n) => n.data.category))].sort();
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function extractLinks(body: string): string[] {
+  const re = /\(\/notes\/([^)#\s]+)\)/g;
+  const ids: string[] = [];
+  let m;
+  while ((m = re.exec(body)) !== null) ids.push(m[1]);
+  return [...new Set(ids)];
+}
+
+const allLinks = Object.fromEntries(allNotes.map((n) => [n.id, extractLinks(n.body ?? "")]));
+const forwardLinks = (allLinks[entry.id] ?? [])
+  .map((id) => allNotes.find((n) => n.id === id))
+  .filter(Boolean) as typeof allNotes;
+const backlinks = allNotes.filter(
+  (n) => n.id !== entry.id && (allLinks[n.id] ?? []).includes(entry.id)
+);
+
+const graphNodes = [
+  { id: entry.id, title: entry.data.title, current: true },
+  ...forwardLinks.map((n) => ({ id: n.id, title: n.data.title, current: false })),
+  ...backlinks
+    .filter((n) => !forwardLinks.some((f) => f.id === n.id))
+    .map((n) => ({ id: n.id, title: n.data.title, current: false })),
+];
+const graphEdges = [
+  ...forwardLinks.map((n) => ({ from: entry.id, to: n.id })),
+  ...backlinks.map((n) => ({ from: n.id, to: entry.id })),
+];
+
+function slugify(text: string) {
+  return text.toLowerCase().replace(/`[^`]*`/g, "").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-");
+}
+const headings: { depth: number; text: string; id: string }[] = [];
+const headingRe = /^(#{2,4}) (.+)$/gm;
+let hm;
+while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
+  const raw = hm[2].trim().replace(/\*\*|__|\*|_|`/g, "");
+  headings.push({ depth: hm[1].length, text: raw, id: slugify(raw) });
+}
+---
+
+<Layout
+  title={`${entry.data.title} — Security Notes`}
+  description={entry.data.description}
+>
+
+  <div class="drawer drawer-end min-h-[calc(100vh-3rem)]">
+    <input id="graph-drawer" type="checkbox" class="drawer-toggle" />
+
+    <div class="drawer-content flex min-h-[calc(100vh-3rem)]">
+
+      <div class="drawer lg:drawer-open w-full">
+        <input id="nav-drawer" type="checkbox" class="drawer-toggle" />
+
+        <div class="drawer-content flex flex-col min-w-0">
+          <main class="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-10 min-w-0">
+            <div class="max-w-2xl mx-auto lg:mx-0">
+
+              <div class="flex items-center justify-between mb-6">
+                <a href="/notes" class="inline-flex items-center gap-1 text-sm text-base-content/35 hover:text-base-content/70 transition-colors">
+                  <ChevronLeft size={14} />Notes
+                </a>
+                <div class="flex items-center gap-2">
+                  <label
+                    for="nav-drawer"
+                    class="lg:hidden flex items-center gap-1.5 font-mono text-xs text-base-content/40 hover:text-base-content/70 transition-colors border border-base-300/50 px-2 py-1 cursor-pointer"
+                  >
+                    <List size={11} />
+                    nav
+                  </label>
+                  <label
+                    for="graph-drawer"
+                    id="graph-toggle"
+                    class="flex items-center gap-1.5 font-mono text-xs text-base-content/40 hover:text-base-content/70 transition-colors border border-base-300/50 px-2 py-1 cursor-pointer"
+                    title="Toggle graph"
+                  >
+                    <PanelRight size={11} />
+                    graph
+                  </label>
+                </div>
+              </div>
+
+              <header class="mb-10">
+                <div class="flex items-center gap-3 mb-5">
+                  <span class="text-xl font-bold tracking-tight">
+                    <span class="text-primary/50 font-mono mr-0.5">/</span>{entry.data.category}
+                  </span>
+                  <span class="text-base-content/20 text-xs">·</span>
+                  <time datetime={entry.data.publishDate.toISOString()} class="text-xs text-base-content/35">
+                    {formatDate(entry.data.publishDate)}
+                  </time>
+                </div>
+                <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-3">{entry.data.title}</h1>
+                <p class="text-base-content/50 mb-4">{entry.data.description}</p>
+                {entry.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-1">
+                    {entry.data.tags.map((tag) => (
+                      <a href={`/notes?tag=${tag}`}
+                        class="font-mono text-[10px] px-1.5 py-0.5 border border-base-300/40 text-base-content/25 hover:text-primary/70 hover:border-primary/40 transition-colors">
+                        {tag}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </header>
+
+              <div class="border-t border-base-300/30 mb-6"></div>
+
+              {headings.length > 0 && (
+                <details class="mb-8 border border-base-300/40 group" style="background: oklch(4% 0 0);">
+                  <summary class="px-3 py-2 flex items-center gap-2 cursor-pointer list-none select-none font-mono text-xs text-base-content/35 hover:text-base-content/60 transition-colors">
+                    <span class="text-primary/40">§</span>
+                    <span>table of contents</span>
+                    <span class="ml-auto opacity-50 group-open:hidden">+</span>
+                    <span class="ml-auto opacity-50 hidden group-open:inline">−</span>
+                  </summary>
+                  <nav class="px-3 pb-3 pt-1 border-t border-base-300/30 space-y-0.5">
+                    {headings.map((h) => (
+                      <a href={`#${h.id}`}
+                        class:list={["block text-xs text-base-content/45 hover:text-base-content/80 transition-colors py-0.5", h.depth === 3 ? "pl-4" : h.depth === 4 ? "pl-8" : ""]}>
+                        <span class="font-mono text-primary/25 mr-1.5">{"#".repeat(h.depth)}</span>{h.text}
+                      </a>
+                    ))}
+                  </nav>
+                </details>
+              )}
+
+              <div class="note-content text-sm leading-relaxed text-base-content/80
+                [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:text-base-content [&_h2]:tracking-tight [&_h2]:pb-1.5 [&_h2]:border-b [&_h2]:border-base-300/30
+                [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-base-content/90
+                [&_h4]:text-sm [&_h4]:font-semibold [&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:text-base-content/80
+                [&_p]:mb-4 [&_p]:leading-relaxed
+                [&_a]:text-primary/80 [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-primary [&_a]:transition-colors
+                [&_ul]:mb-4 [&_ul]:ml-5 [&_ul]:list-none [&_ul]:space-y-1
+                [&_ul_li]:before:content-['–'] [&_ul_li]:before:text-base-content/25 [&_ul_li]:before:mr-2 [&_ul_li]:before:font-mono
+                [&_ol]:mb-4 [&_ol]:ml-5 [&_ol]:list-decimal [&_ol]:space-y-1
+                [&_li]:text-base-content/75
+                [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs [&_code]:bg-base-200 [&_code]:text-primary/80 [&_code]:border [&_code]:border-base-300/50
+                [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4 [&_pre]:bg-base-200/60 [&_pre]:border [&_pre]:border-base-300/50 [&_pre]:text-xs
+                [&_pre_code]:bg-transparent [&_pre_code]:border-0 [&_pre_code]:p-0 [&_pre_code]:text-base-content/80
+                [&_blockquote]:border-l-2 [&_blockquote]:border-primary/25 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4 [&_blockquote]:text-base-content/50
+                [&_table]:w-full [&_table]:mb-6 [&_table]:text-xs [&_table]:border-collapse
+                [&_th]:text-left [&_th]:px-3 [&_th]:py-2 [&_th]:border [&_th]:border-base-300/50 [&_th]:bg-base-200/60 [&_th]:font-mono [&_th]:text-[10px] [&_th]:uppercase [&_th]:tracking-widest [&_th]:text-base-content/50
+                [&_td]:px-3 [&_td]:py-2 [&_td]:border [&_td]:border-base-300/40 [&_td]:font-mono [&_td]:text-xs [&_td]:text-base-content/70
+                [&_tr:nth-child(even)_td]:bg-base-200/20
+                [&_hr]:border-t [&_hr]:border-base-300/30 [&_hr]:my-8">
+                <Content />
+              </div>
+
+              <div class="border-t border-base-300/30 mt-12 pt-6 flex items-center justify-between font-mono text-[10px] text-base-content/25">
+                <a href="/notes" class="hover:text-base-content/50 transition-colors">← all notes</a>
+                <a href="/" class="hover:text-base-content/50 transition-colors">~/hadi</a>
+              </div>
+            </div>
+          </main>
+        </div>
+
+        <div class="drawer-side z-50">
+          <label for="nav-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+          <aside
+            class="w-56 min-h-full flex flex-col border-r border-base-300/60"
+            style="background: oklch(4% 0 0);"
+          >
+            <div class="px-4 py-4 border-b border-base-300/40">
+              <a href="/notes" class="flex items-center gap-2 mb-3 hover:text-primary transition-colors">
+                <Shield size={13} class="text-primary/60 shrink-0" />
+                <span class="font-mono text-xs text-primary/60 tracking-widest uppercase">security notes</span>
+              </a>
+              <div class="flex items-center gap-1.5 bg-base-200/50 px-2 py-1.5 border border-base-300/40">
+                <span class="font-mono text-xs text-base-content/30">›</span>
+                <input
+                  data-search
+                  type="text"
+                  placeholder="search..."
+                  class="bg-transparent font-mono text-xs text-base-content/70 placeholder:text-base-content/25 outline-none w-full"
+                />
+              </div>
+            </div>
+            <nav class="px-3 py-3 flex-1 overflow-y-auto">
+              {categories.map((cat) => (
+                <div class="mb-4">
+                  <div class="px-1 mb-1.5">
+                    <span class="text-sm font-bold tracking-tight">
+                      <span class="text-primary/50 font-mono mr-0.5">/</span>{cat}
+                    </span>
+                  </div>
+                  <ul class="ml-3 space-y-0.5 border-l border-base-300/30 pl-2">
+                    {sortedNotes.filter((n) => n.data.category === cat).map((n) => (
+                      <li>
+                        <a
+                          href={`/notes/${n.id}`}
+                          class:list={[
+                            "nav-item font-mono text-xs block py-0.5 px-1 truncate transition-colors",
+                            n.id === entry.id
+                              ? "text-primary bg-primary/8"
+                              : "text-base-content/45 hover:text-base-content/80 hover:bg-base-200/30",
+                          ]}
+                          data-title={n.data.title.toLowerCase()}
+                          data-tags={n.data.tags.join(",")}
+                        >
+                          {n.id === entry.id ? "▶ " : ""}{n.data.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+          </aside>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="drawer-side z-40">
+      <label for="graph-drawer" aria-label="close sidebar" class="drawer-overlay xl:hidden"></label>
+      <aside
+        id="right-sidebar"
+        class="w-52 min-h-full flex flex-col border-l border-base-300/60"
+        style="background: oklch(4% 0 0);"
+      >
+        <div class="border-b border-base-300/40">
+          <p class="font-mono text-[10px] text-base-content/25 uppercase tracking-widest px-3 pt-3 pb-2">graph</p>
+          <canvas
+            id="note-graph"
+            height="190"
+            style="width:100%; display:block; background: oklch(2% 0 0); cursor:default;"
+          ></canvas>
+          {graphNodes.length <= 1 && (
+            <p class="font-mono text-[9px] text-base-content/20 text-center py-2">no connections yet</p>
+          )}
+        </div>
+
+        {forwardLinks.length > 0 && (
+          <div class="p-3 border-b border-base-300/40">
+            <p class="font-mono text-[10px] text-base-content/25 uppercase tracking-widest mb-2">links</p>
+            <ul class="space-y-1">
+              {forwardLinks.map((n) => (
+                <li>
+                  <a href={`/notes/${n.id}`}
+                    class="font-mono text-xs text-base-content/45 hover:text-primary/80 transition-colors block truncate">
+                    → {n.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {backlinks.length > 0 && (
+          <div class="p-3">
+            <p class="font-mono text-[10px] text-base-content/25 uppercase tracking-widest mb-2">backlinks</p>
+            <ul class="space-y-1">
+              {backlinks.map((n) => (
+                <li>
+                  <a href={`/notes/${n.id}`}
+                    class="font-mono text-xs text-base-content/45 hover:text-primary/80 transition-colors block truncate">
+                    ← {n.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {forwardLinks.length === 0 && backlinks.length === 0 && (
+          <div class="p-3">
+            <p class="font-mono text-[9px] text-base-content/20">no linked notes</p>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ graphNodes, graphEdges }}>
+    window.__graphNodes = graphNodes;
+    window.__graphEdges = graphEdges;
+  </script>
+
+  <script>
+    const PRIMARY = "oklch(71% 0.0863 296.59)";
+
+    type GNode = { id: string; title: string; current: boolean; x: number; y: number; vx: number; vy: number };
+    type GEdge = { from: string; to: string };
+    let stopGraph: (() => void) | null = null;
+
+    function startGraph(): (() => void) | null {
+      const w = window as typeof window & { __graphNodes?: { id: string; title: string; current: boolean }[]; __graphEdges?: GEdge[] };
+      const graphNodes = w.__graphNodes ?? [];
+      const graphEdges: GEdge[] = w.__graphEdges ?? [];
+      const canvas = document.getElementById("note-graph") as HTMLCanvasElement | null;
+      if (!canvas || graphNodes.length === 0) return null;
+
+      const W = canvas.width = canvas.offsetWidth;
+      const H = canvas.height = 190;
+      const ctx = canvas.getContext("2d")!;
+
+      const nodes: GNode[] = graphNodes.map((n) => ({
+        ...n,
+        x: n.current ? W / 2 : W / 2 + (Math.random() - 0.5) * 80,
+        y: n.current ? H / 2 : H / 2 + (Math.random() - 0.5) * 80,
+        vx: 0,
+        vy: 0,
+      }));
+
+      let dragging: GNode | null = null;
+      let hovered: GNode | null = null;
+
+      function nodeAt(x: number, y: number): GNode | null {
+        return nodes.find((n) => {
+          const dx = n.x - x, dy = n.y - y;
+          return Math.sqrt(dx * dx + dy * dy) < (n.current ? 10 : 8);
+        }) ?? null;
+      }
+
+      function tick() {
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const a = nodes[i], b = nodes[j];
+            const dx = b.x - a.x, dy = b.y - a.y;
+            const d = Math.sqrt(dx * dx + dy * dy) || 1;
+            const f = 900 / (d * d);
+            a.vx -= (dx / d) * f; a.vy -= (dy / d) * f;
+            b.vx += (dx / d) * f; b.vy += (dy / d) * f;
+          }
+        }
+        for (const e of graphEdges) {
+          const a = nodes.find((n: GNode) => n.id === e.from);
+          const b = nodes.find((n: GNode) => n.id === e.to);
+          if (!a || !b) continue;
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const d = Math.sqrt(dx * dx + dy * dy) || 1;
+          const f = (d - 75) * 0.04;
+          a.vx += (dx / d) * f; a.vy += (dy / d) * f;
+          b.vx -= (dx / d) * f; b.vy -= (dy / d) * f;
+        }
+        for (const n of nodes) {
+          n.vx += (W / 2 - n.x) * 0.025;
+          n.vy += (H / 2 - n.y) * 0.025;
+        }
+        for (const n of nodes) {
+          if (n === dragging) continue;
+          n.vx *= 0.78; n.vy *= 0.78;
+          n.x = Math.max(16, Math.min(W - 16, n.x + n.vx));
+          n.y = Math.max(16, Math.min(H - 16, n.y + n.vy));
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = "oklch(2% 0 0)";
+        ctx.fillRect(0, 0, W, H);
+
+        const connected = new Set();
+        if (hovered) {
+          for (const e of graphEdges) {
+            if (e.from === hovered.id) connected.add(e.to);
+            if (e.to === hovered.id) connected.add(e.from);
+          }
+        }
+
+        for (const e of graphEdges) {
+          const a = nodes.find((n: GNode) => n.id === e.from);
+          const b = nodes.find((n: GNode) => n.id === e.to);
+          if (!a || !b) continue;
+          const lit = hovered && (e.from === hovered.id || e.to === hovered.id);
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = lit ? "oklch(55% 0 0)" : "oklch(27% 0 0)";
+          ctx.lineWidth = lit ? 1.5 : 1;
+          ctx.stroke();
+        }
+
+        for (const n of nodes) {
+          const isHov = hovered?.id === n.id;
+          const isCon = connected.has(n.id);
+          const r = n.current ? 7 : isHov ? 6 : 4.5;
+
+          if (isHov && !n.current) {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, r + 5, 0, Math.PI * 2);
+            ctx.fillStyle = "oklch(71% 0.0863 296.59 / 0.15)";
+            ctx.fill();
+          }
+
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+          ctx.fillStyle = n.current
+            ? PRIMARY
+            : isHov ? "oklch(78% 0.05 296.59)"
+            : isCon ? "oklch(58% 0.03 296.59)"
+            : "oklch(40% 0 0)";
+          ctx.fill();
+
+          if (n.current || isHov || isCon) {
+            ctx.font = `${n.current ? "10px" : "9px"} monospace`;
+            ctx.textAlign = "center";
+            ctx.fillStyle = n.current ? "oklch(87% 0 0)" : "oklch(62% 0 0)";
+            const label = n.title.length > 14 ? n.title.slice(0, 13) + "…" : n.title;
+            ctx.fillText(label, n.x, n.y + r + 9);
+          }
+        }
+      }
+
+      let animId: number;
+      function loop() { tick(); draw(); animId = requestAnimationFrame(loop); }
+      animId = requestAnimationFrame(loop);
+
+      canvas.addEventListener("mousedown", (e) => {
+        const r = canvas.getBoundingClientRect();
+        const sx = W / canvas.offsetWidth;
+        dragging = nodeAt((e.clientX - r.left) * sx, (e.clientY - r.top) * (H / canvas.offsetHeight));
+      });
+      canvas.addEventListener("mousemove", (e) => {
+        const r = canvas.getBoundingClientRect();
+        const sx = W / canvas.offsetWidth;
+        const x = (e.clientX - r.left) * sx;
+        const y = (e.clientY - r.top) * (H / canvas.offsetHeight);
+        if (dragging) { dragging.x = x; dragging.y = y; dragging.vx = 0; dragging.vy = 0; }
+        hovered = nodeAt(x, y);
+        canvas.style.cursor = hovered && !hovered.current ? "pointer" : "default";
+      });
+      canvas.addEventListener("mouseup", () => { dragging = null; });
+      canvas.addEventListener("mouseleave", () => { dragging = null; hovered = null; });
+      canvas.addEventListener("click", (e) => {
+        const r = canvas.getBoundingClientRect();
+        const sx = W / canvas.offsetWidth;
+        const n = nodeAt((e.clientX - r.left) * sx, (e.clientY - r.top) * (H / canvas.offsetHeight));
+        if (n && !n.current) window.location.href = `/notes/${n.id}`;
+      });
+
+      return () => cancelAnimationFrame(animId);
+    }
+
+    function init() {
+      if (stopGraph) { stopGraph(); stopGraph = null; }
+
+      const graphDrawer = document.getElementById("graph-drawer") as HTMLInputElement | null;
+      if (!graphDrawer) return;
+
+      function onGraphDrawerChange() {
+        if (graphDrawer!.checked) {
+          requestAnimationFrame(() => { stopGraph = startGraph() ?? null; });
+        } else {
+          if (stopGraph) { stopGraph(); stopGraph = null; }
+        }
+      }
+      graphDrawer.addEventListener("change", onGraphDrawerChange);
+
+      const xlQuery = window.matchMedia("(min-width: 1280px)");
+      if (xlQuery.matches && !graphDrawer.checked) {
+        graphDrawer.checked = true;
+        onGraphDrawerChange();
+      }
+      xlQuery.addEventListener("change", (e) => {
+        if (!e.matches && graphDrawer.checked) {
+          graphDrawer.checked = false;
+          if (stopGraph) { stopGraph(); stopGraph = null; }
+        }
+      });
+
+      if (!document.getElementById("heading-anchor-styles")) {
+        const s = document.createElement("style");
+        s.id = "heading-anchor-styles";
+        s.textContent = `
+          .note-content h2, .note-content h3, .note-content h4 {
+            display: flex !important;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0;
+          }
+          .heading-anchor {
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-left: 0.4em;
+            color: oklch(38% 0 0);
+            opacity: 0;
+            transition: opacity 120ms, color 120ms;
+            text-decoration: none;
+          }
+          .note-content h2:hover .heading-anchor,
+          .note-content h3:hover .heading-anchor,
+          .note-content h4:hover .heading-anchor { opacity: 1; }
+          .heading-anchor:hover, .heading-anchor.copied { color: oklch(71% 0.0863 296.59); opacity: 1; }
+        `;
+        document.head.appendChild(s);
+      }
+      document.querySelectorAll(".note-content h2, .note-content h3, .note-content h4").forEach((heading) => {
+        if (!heading.id || heading.querySelector(".heading-anchor")) return;
+        const anchor = document.createElement("a");
+        anchor.href = `#${heading.id}`;
+        anchor.className = "heading-anchor";
+        anchor.setAttribute("aria-label", "Copy link to section");
+        anchor.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
+        anchor.addEventListener("click", (e) => {
+          e.preventDefault();
+          const url = `${location.origin}${location.pathname}#${heading.id}`;
+          navigator.clipboard.writeText(url).then(() => {
+            anchor.classList.add("copied");
+            setTimeout(() => anchor.classList.remove("copied"), 1800);
+          });
+          history.pushState(null, "", `#${heading.id}`);
+        });
+        heading.appendChild(anchor);
+      });
+
+      const navItems = document.querySelectorAll<HTMLElement>(".nav-item");
+      document.querySelectorAll<HTMLInputElement>("[data-search]").forEach((input) => {
+        input.addEventListener("input", (e) => {
+          const target = e.target as HTMLInputElement;
+          const search = target.value.toLowerCase().trim();
+          document.querySelectorAll<HTMLInputElement>("[data-search]").forEach((o) => {
+            if (o !== target) o.value = target.value;
+          });
+          navItems.forEach((item) => {
+            const match = !search || (item.dataset.title ?? "").includes(search) || (item.dataset.tags ?? "").includes(search);
+            item.style.display = match ? "" : "none";
+          });
+        });
+      });
+    }
+
+    document.addEventListener("astro:page-load", init);
+    document.addEventListener("astro:before-preparation", () => {
+      if (stopGraph) { stopGraph(); stopGraph = null; }
+    });
+  </script>
+</Layout>
