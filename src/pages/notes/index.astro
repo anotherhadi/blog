@@ -8,7 +8,13 @@ const sortedNotes = notes.sort(
   (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
 );
 
-const categories = [...new Set(notes.map((n) => n.data.category))].sort();
+function getCategory(n: { id: string; data: { category?: string } }): string {
+  if (n.data.category) return n.data.category;
+  const parts = n.id.split("/");
+  return parts.length > 1 ? parts[0] : "General";
+}
+
+const categories = [...new Set(notes.map(getCategory))].sort();
 
 const searchIndex = Object.fromEntries(
   sortedNotes.map((n) => [
@@ -53,7 +59,7 @@ const searchIndex = Object.fromEntries(
 <div id="notes-container" class="space-y-12">
       {
         categories.map((cat) => {
-          const catNotes = sortedNotes.filter((n) => n.data.category === cat);
+          const catNotes = sortedNotes.filter((n) => getCategory(n) === cat);
           return (
             <section data-category={cat.toLowerCase()}>
 <div class="flex items-baseline gap-3 mb-4">
@@ -136,7 +142,7 @@ const searchIndex = Object.fromEntries(
           const tags = card.dataset.tags ? card.dataset.tags.split(",") : [];
           const show = !query || (
             isTag
-              ? tags.some((t) => t.includes(query))
+              ? tags.some((t) => t.includes(query)) || (searchIndex[id] ?? "").includes(`#${query}`)
               : (searchIndex[id] ?? "").includes(query)
           );
           card.style.display = show ? "" : "none";

@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { Shield, ChevronLeft, List, PanelRight } from "@lucide/astro";
+import Author from "../../components/Author.astro";
 
 export async function getStaticPaths() {
   const notes = await getCollection("notes");
@@ -16,7 +17,13 @@ const { Content } = await render(entry);
 
 const allNotes = await getCollection("notes");
 const sortedNotes = allNotes.sort((a, b) => a.data.title.localeCompare(b.data.title));
-const categories = [...new Set(allNotes.map((n) => n.data.category))].sort();
+function getCategory(n: { id: string; data: { category?: string } }): string {
+  if (n.data.category) return n.data.category;
+  const parts = n.id.split("/");
+  return parts.length > 1 ? parts[0] : "General";
+}
+
+const categories = [...new Set(allNotes.map(getCategory))].sort();
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -50,6 +57,14 @@ const graphEdges = [
   ...backlinks.map((n) => ({ from: n.id, to: entry.id })),
 ];
 
+function extractInlineHashtags(body: string): string[] {
+  const re = /#(\w+)/g;
+  const tags: string[] = [];
+  let m;
+  while ((m = re.exec(body)) !== null) tags.push(m[1].toLowerCase());
+  return [...new Set(tags)];
+}
+
 function slugify(text: string) {
   return text.toLowerCase().replace(/`[^`]*`/g, "").replace(/[^\w\s-]/g, "").trim().replace(/[\s_]+/g, "-");
 }
@@ -62,12 +77,21 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
 }
 ---
 
+<style>
+  /* Both sidebars sit below the navbar when in drawer-open mode */
+  .drawer.lg\:drawer-open > .drawer-side,
+  .drawer.xl\:drawer-open > .drawer-side {
+    top: 3rem;
+    height: calc(100vh - 3rem);
+  }
+</style>
+
 <Layout
   title={`${entry.data.title} — Security Notes`}
   description={entry.data.description}
 >
 
-  <div class="drawer drawer-end min-h-[calc(100vh-3rem)]">
+  <div class="drawer drawer-end xl:drawer-open min-h-[calc(100vh-3rem)]">
     <input id="graph-drawer" type="checkbox" class="drawer-toggle" />
 
     <div class="drawer-content flex min-h-[calc(100vh-3rem)]">
@@ -103,10 +127,10 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                 </div>
               </div>
 
-              <header class="mb-10">
+              <header class="mb-8">
                 <div class="flex items-center gap-3 mb-5">
                   <span class="text-xl font-bold tracking-tight">
-                    <span class="text-primary/50 font-mono mr-0.5">/</span>{entry.data.category}
+                    <span class="text-primary/50 font-mono mr-0.5">/</span>{getCategory(entry)}
                   </span>
                   <span class="text-base-content/20 text-xs">·</span>
                   <time datetime={entry.data.publishDate.toISOString()} class="text-xs text-base-content/35">
@@ -116,7 +140,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                 <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-3">{entry.data.title}</h1>
                 <p class="text-base-content/50 mb-4">{entry.data.description}</p>
                 {entry.data.tags.length > 0 && (
-                  <div class="flex flex-wrap gap-1">
+                  <div class="flex flex-wrap gap-1 mb-4">
                     {entry.data.tags.map((tag) => (
                       <a href={`/notes?tag=${tag}`}
                         class="font-mono text-[10px] px-1.5 py-0.5 border border-base-300/40 text-base-content/25 hover:text-primary/70 hover:border-primary/40 transition-colors">
@@ -181,7 +205,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
         <div class="drawer-side z-50">
           <label for="nav-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
           <aside
-            class="w-56 min-h-full flex flex-col border-r border-base-300/60"
+            class="w-56 flex flex-col border-r border-base-300/60 h-full"
             style="background: oklch(4% 0 0);"
           >
             <div class="px-4 py-4 border-b border-base-300/40">
@@ -208,7 +232,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                     </span>
                   </div>
                   <ul class="ml-3 space-y-0.5 border-l border-base-300/30 pl-2">
-                    {sortedNotes.filter((n) => n.data.category === cat).map((n) => (
+                    {sortedNotes.filter((n) => getCategory(n) === cat).map((n) => (
                       <li>
                         <a
                           href={`/notes/${n.id}`}
@@ -219,7 +243,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                               : "text-base-content/45 hover:text-base-content/80 hover:bg-base-200/30",
                           ]}
                           data-title={n.data.title.toLowerCase()}
-                          data-tags={n.data.tags.join(",")}
+                          data-tags={[...n.data.tags, ...extractInlineHashtags(n.body ?? "")].join(",")}
                         >
                           {n.id === entry.id ? "▶ " : ""}{n.data.title}
                         </a>
@@ -239,7 +263,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
       <label for="graph-drawer" aria-label="close sidebar" class="drawer-overlay xl:hidden"></label>
       <aside
         id="right-sidebar"
-        class="w-52 min-h-full flex flex-col border-l border-base-300/60"
+        class="w-52 flex flex-col border-l border-base-300/60 h-full overflow-y-auto"
         style="background: oklch(4% 0 0);"
       >
         <div class="border-b border-base-300/40">
@@ -291,6 +315,10 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
             <p class="font-mono text-[9px] text-base-content/20">no linked notes</p>
           </div>
         )}
+        
+        <div class="px-4 py-6">
+        <Author />
+        </div>
       </aside>
     </div>
   </div>
@@ -462,6 +490,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
       const graphDrawer = document.getElementById("graph-drawer") as HTMLInputElement | null;
       if (!graphDrawer) return;
 
+      // On non-xl: let DaisyUI overlay work via checkbox
       function onGraphDrawerChange() {
         if (graphDrawer!.checked) {
           requestAnimationFrame(() => { stopGraph = startGraph() ?? null; });
@@ -471,16 +500,35 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
       }
       graphDrawer.addEventListener("change", onGraphDrawerChange);
 
+      const outerDrawer = graphDrawer.closest<HTMLElement>(".drawer.drawer-end");
       const xlQuery = window.matchMedia("(min-width: 1280px)");
-      if (xlQuery.matches && !graphDrawer.checked) {
-        graphDrawer.checked = true;
-        onGraphDrawerChange();
-      }
-      xlQuery.addEventListener("change", (e) => {
-        if (!e.matches && graphDrawer.checked) {
-          graphDrawer.checked = false;
+
+      function setXlSidebar(open: boolean) {
+        if (!outerDrawer) return;
+        if (open) {
+          outerDrawer.classList.add("xl:drawer-open");
+          requestAnimationFrame(() => { stopGraph = startGraph() ?? null; });
+        } else {
+          outerDrawer.classList.remove("xl:drawer-open");
           if (stopGraph) { stopGraph(); stopGraph = null; }
         }
+      }
+
+      // On xl: toggle the class instead of the checkbox (avoids DaisyUI overlay + scroll lock)
+      const graphToggle = document.getElementById("graph-toggle");
+      graphToggle?.addEventListener("click", (e) => {
+        if (!xlQuery.matches) return;
+        e.preventDefault();
+        setXlSidebar(!outerDrawer?.classList.contains("xl:drawer-open"));
+      });
+
+      // Auto-open on xl, close when leaving xl
+      if (xlQuery.matches) {
+        outerDrawer?.classList.add("xl:drawer-open");
+        requestAnimationFrame(() => { stopGraph = startGraph() ?? null; });
+      }
+      xlQuery.addEventListener("change", (e) => {
+        if (!e.matches) setXlSidebar(false);
       });
 
       if (!document.getElementById("heading-anchor-styles")) {
@@ -533,12 +581,20 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
       document.querySelectorAll<HTMLInputElement>("[data-search]").forEach((input) => {
         input.addEventListener("input", (e) => {
           const target = e.target as HTMLInputElement;
-          const search = target.value.toLowerCase().trim();
+          const raw = target.value.toLowerCase().trim();
           document.querySelectorAll<HTMLInputElement>("[data-search]").forEach((o) => {
             if (o !== target) o.value = target.value;
           });
+          const isTag = raw.startsWith("#");
+          const search = isTag ? raw.slice(1) : raw;
           navItems.forEach((item) => {
-            const match = !search || (item.dataset.title ?? "").includes(search) || (item.dataset.tags ?? "").includes(search);
+            const title = item.dataset.title ?? "";
+            const tags = item.dataset.tags ? item.dataset.tags.split(",") : [];
+            const match = !search || (
+              isTag
+                ? tags.some((t) => t.includes(search))
+                : title.includes(search) || tags.join(",").includes(search)
+            );
             item.style.display = match ? "" : "none";
           });
         });
