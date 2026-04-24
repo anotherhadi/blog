@@ -5,6 +5,7 @@ import TagBadge from "../components/TagBadge.astro";
 import BackToTop from "../components/BackToTop.astro";
 import { ChevronLeft } from "@lucide/astro";
 import { parse } from "node-html-parser";
+import Author from "../components/Author.astro";
 
 interface Props {
   title: string;
@@ -54,17 +55,17 @@ const toc = headers.map((header) => ({
 
     <!-- Featured Image -->
     {
-      image && (
-        <figure class="mb-8 rounded-2xl overflow-hidden">
-          <Image
-            src={image}
-            alt={title}
-            class="w-full aspect-video object-cover"
-            width={1200}
-            height={630}
-          />
-        </figure>
-      )
+    image && (
+    <figure class="mb-8 rounded-2xl overflow-hidden">
+      <Image
+        src={image}
+        alt={title}
+        class="w-full aspect-video object-cover"
+        width={1200}
+        height={630}
+      />
+    </figure>
+    )
     }
 
     <!-- Post Header -->
@@ -73,7 +74,7 @@ const toc = headers.map((header) => ({
       <p class="text-xl text-base-content/70 mb-4">{description}</p>
 
       <div
-        class="flex flex-wrap items-center gap-4 text-sm text-base-content/60"
+        class="flex flex-wrap items-center gap-4 text-sm text-base-content/60 mb-4"
       >
         <time datetime={publishDate.toISOString()}>
           {formatDate(publishDate)}
@@ -81,24 +82,26 @@ const toc = headers.map((header) => ({
         <span>•</span>
         <span>{readingTime} min read</span>
         {
-          updatedDate && (
-            <>
-              <span>•</span>
-              <span>Updated: {formatDate(updatedDate)}</span>
-            </>
-          )
+        updatedDate && (
+        <>
+        <span>•</span>
+        <span>Updated: {formatDate(updatedDate)}</span>
+      </>
+        )
         }
       </div>
 
       {
-        tags && tags.length > 0 && (
-          <div class="flex flex-wrap gap-2 mt-4">
-            {tags.map((tag) => (
-              <TagBadge tag={tag} />
-            ))}
-          </div>
-        )
+      tags && tags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-4">
+        {tags.map((tag) => (
+        <TagBadge tag={tag} />
+        ))}
+      </div>
+      )
       }
+
+      <Author />
     </header>
 
     <!-- Divider -->
@@ -170,7 +173,7 @@ const toc = headers.map((header) => ({
         <span class="text-base-content/30">•</span>
         <a href="/#contact" class="link link-hover">Contact me</a>
         <span class="text-base-content/30">•</span>
-      <a href="https://ko-fi.com/anotherhadi" class="link link-hover">Support me</a>
+        <a href="https://ko-fi.com/anotherhadi" class="link link-hover">Support me</a>
       </div>
     </div>
   </article>
