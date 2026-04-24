@@ -2,17 +2,12 @@
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { ChevronRight, Shield } from "@lucide/astro";
+import { getCategory } from "../../utils/notes";
 
 const notes = await getCollection("notes");
 const sortedNotes = notes.sort(
   (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
 );
-
-function getCategory(n: { id: string; data: { category?: string } }): string {
-  if (n.data.category) return n.data.category;
-  const parts = n.id.split("/");
-  return parts.length > 1 ? parts[0] : "General";
-}
 
 const categories = [...new Set(notes.map(getCategory))].sort();
 
