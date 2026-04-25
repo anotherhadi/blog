@@ -27,10 +27,9 @@ function formatDate(date: Date) {
   });
 }
 
-// Calculate reading time (rough estimate based on word count)
 const content = await Astro.slots.render("default");
 const wordCount = content.split(/\s+/).length;
-const readingTime = Math.ceil(wordCount / 200); // Average reading speed: 200 words/min
+const readingTime = Math.ceil(wordCount / 200);
 
 const root = parse(content);
 const headers = root.querySelectorAll("h1, h2, h3");
@@ -38,14 +37,14 @@ const headers = root.querySelectorAll("h1, h2, h3");
 const toc = headers.map((header) => ({
   depth: parseInt(header.tagName.replace("H", "")),
   text: header.innerText.trim(),
-  slug: header.getAttribute("id"), // Astro génère l'id automatiquement
+  slug: header.getAttribute("id"),
 }));
 ---
 
 <Layout title={`${title} - Another Hadi`} description={description}>
   <article class="max-w-4xl mx-auto px-4 py-20">
     <BackToTop />
-    <!-- Back button -->
+
     <div class="mb-8">
       <a href="/blog" class="btn btn-ghost btn-sm">
         <ChevronLeft size={18} />
@@ -53,22 +52,20 @@ const toc = headers.map((header) => ({
       </a>
     </div>
 
-    <!-- Featured Image -->
     {
-    image && (
-    <figure class="mb-8 rounded-2xl overflow-hidden">
-      <Image
-        src={image}
-        alt={title}
-        class="w-full aspect-video object-cover"
-        width={1200}
-        height={630}
-      />
-    </figure>
-    )
+      image && (
+        <figure class="mb-8 rounded-2xl overflow-hidden">
+          <Image
+            src={image}
+            alt={title}
+            class="w-full aspect-video object-cover"
+            width={1200}
+            height={630}
+          />
+        </figure>
+      )
     }
 
-    <!-- Post Header -->
     <header class="mb-8">
       <h1 class="text-5xl font-bold mb-4">{title}</h1>
       <p class="text-xl text-base-content/70 mb-4">{description}</p>
@@ -82,64 +79,58 @@ const toc = headers.map((header) => ({
         <span>•</span>
         <span>{readingTime} min read</span>
         {
-        updatedDate && (
-        <>
-        <span>•</span>
-        <span>Updated: {formatDate(updatedDate)}</span>
-      </>
-        )
+          updatedDate && (
+            <>
+              <span>•</span>
+              <span>Updated: {formatDate(updatedDate)}</span>
+            </>
+          )
         }
       </div>
 
       {
-      tags && tags.length > 0 && (
-      <div class="flex flex-wrap gap-2 mb-4">
-        {tags.map((tag) => (
-        <TagBadge tag={tag} />
-        ))}
-      </div>
-      )
+        tags && tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mb-4">
+            {tags.map((tag) => (
+              <TagBadge tag={tag} />
+            ))}
+          </div>
+        )
       }
 
       <Author />
     </header>
 
-    <!-- Divider -->
     <div class="divider"></div>
 
-    <!-- TOC -->
     {
-    toc.length > 0 && (
-    <div class="collapse bg-base-200/50 rounded-xl mb-8 border border-base-300">
-      <input type="checkbox" />
-
-      <p class="collapse-title font-bold uppercase text-xs tracking-widest opacity-60">
-        Table of Contents
-      </p>
-      <div class="collapse-content text-sm">
-        <ul class="space-y-3">
-          {toc.map((item) => (
-          <li
-            class={`list-none ${item.depth === 3 ? "ml-6 text-sm" : "font-medium"}`}
-          >
-            <a
-              href={`#${item.slug}`}
-              class="hover:link transition-all flex items-center gap-2"
-            >
-              <span class="text-primary/40">{"#".repeat(item.depth)}</span>
-              {item.text}
-            </a>
-          </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-    <nav class="bg-base-200/50 ">
-    </nav>
-    )
+      toc.length > 0 && (
+        <div class="collapse bg-base-200/50 rounded-xl mb-8 border border-base-300">
+          <input type="checkbox" />
+          <p class="collapse-title font-bold uppercase text-xs tracking-widest opacity-60">
+            Table of Contents
+          </p>
+          <div class="collapse-content text-sm">
+            <ul class="space-y-3">
+              {toc.map((item) => (
+                <li
+                  class={`list-none ${item.depth === 3 ? "ml-6 text-sm" : "font-medium"}`}
+                >
+                  <a
+                    href={`#${item.slug}`}
+                    class="hover:link transition-all flex items-center gap-2"
+                  >
+                    <span class="text-primary/40">{"#".repeat(item.depth)}</span>
+                    {item.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )
     }
 
-    <!-- Post Content -->
     <div
       class="max-w-none leading-7
       [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:mt-8 [&_h1]:mb-4
@@ -163,17 +154,17 @@ const toc = headers.map((header) => ({
       <slot />
     </div>
 
-    <!-- Divider -->
     <div class="divider mt-12"></div>
 
-    <!-- Back to blog link -->
     <div class="flex justify-center gap-2 mt-12">
       <div class="flex gap-3 justify-center flex-wrap text-sm">
         <a href="/blog" class="link link-hover">View All Posts</a>
         <span class="text-base-content/30">•</span>
         <a href="/#contact" class="link link-hover">Contact me</a>
         <span class="text-base-content/30">•</span>
-        <a href="https://ko-fi.com/anotherhadi" class="link link-hover">Support me</a>
+        <a href="https://ko-fi.com/anotherhadi" class="link link-hover"
+          >Support me</a
+        >
       </div>
     </div>
   </article>

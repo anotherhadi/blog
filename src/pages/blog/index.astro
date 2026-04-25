@@ -10,7 +10,6 @@ const blogPosts = await getCollection("blog");
 const sortedPosts = blogPosts.sort(
   (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime(),
 );
-
 ---
 
 <Layout

@@ -6,7 +6,7 @@ import { getCategory } from "../../utils/notes";
 
 const notes = await getCollection("notes");
 const sortedNotes = notes.sort(
-  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime(),
 );
 
 const categories = [...new Set(notes.map(getCategory))].sort();
@@ -15,7 +15,7 @@ const searchIndex = Object.fromEntries(
   sortedNotes.map((n) => [
     n.id,
     [n.data.title, n.data.description, n.body ?? ""].join(" ").toLowerCase(),
-  ])
+  ]),
 );
 ---
 
@@ -24,11 +24,13 @@ const searchIndex = Object.fromEntries(
   description="Reference notes on cybersecurity tools and techniques."
 >
   <main class="max-w-4xl mx-auto px-4 py-16 sm:py-20">
-
-<div class="text-center mb-12">
+    <div class="text-center mb-12">
       <div class="flex items-center justify-center gap-2 mb-4">
         <Shield size={20} class="text-primary/60" />
-        <span class="font-mono text-xs text-primary/60 tracking-widest uppercase">security notes</span>
+        <span
+          class="font-mono text-xs text-primary/60 tracking-widest uppercase"
+          >security notes</span
+        >
       </div>
       <h1 class="text-4xl sm:text-5xl font-bold mb-4">Notes</h1>
       <p class="text-base-content/50 max-w-md mx-auto">
@@ -36,8 +38,10 @@ const searchIndex = Object.fromEntries(
       </p>
     </div>
 
-<div class="mb-12 max-w-sm mx-auto">
-      <div class="flex items-center gap-2 border border-base-300/60 px-3 py-2 bg-base-200/30 focus-within:border-primary/40 transition-colors">
+    <div class="mb-12 max-w-sm mx-auto">
+      <div
+        class="flex items-center gap-2 border border-base-300/60 px-3 py-2 bg-base-200/30 focus-within:border-primary/40 transition-colors"
+      >
         <span class="font-mono text-sm text-base-content/25">›</span>
         <input
           data-search
@@ -51,15 +55,16 @@ const searchIndex = Object.fromEntries(
       </p>
     </div>
 
-<div id="notes-container" class="space-y-12">
+    <div id="notes-container" class="space-y-12">
       {
         categories.map((cat) => {
           const catNotes = sortedNotes.filter((n) => getCategory(n) === cat);
           return (
             <section data-category={cat.toLowerCase()}>
-<div class="flex items-baseline gap-3 mb-4">
+              <div class="flex items-baseline gap-3 mb-4">
                 <h2 class="text-xl font-bold tracking-tight">
-                  <span class="text-primary/50 font-mono mr-1">/</span>{cat}
+                  <span class="text-primary/50 font-mono mr-1">/</span>
+                  {cat}
                 </h2>
                 <span class="font-mono text-xs text-base-content/25">
                   {catNotes.length} note{catNotes.length !== 1 ? "s" : ""}
@@ -67,7 +72,7 @@ const searchIndex = Object.fromEntries(
               </div>
               <div class="border-t border-base-300/40 mb-1" />
 
-<ul class="divide-y divide-base-300/20">
+              <ul class="divide-y divide-base-300/20">
                 {catNotes.map((n) => (
                   <li>
                     <a
@@ -109,14 +114,18 @@ const searchIndex = Object.fromEntries(
       }
     </div>
 
-<div id="empty-state" class="hidden text-center py-20 font-mono text-sm text-base-content/25">
+    <div
+      id="empty-state"
+      class="hidden text-center py-20 font-mono text-sm text-base-content/25"
+    >
       no results.
     </div>
 
-<p class="text-center font-mono text-xs text-base-content/20 mt-16">
-      <span id="note-count">{notes.length}</span> note{notes.length !== 1 ? "s" : ""} total
+    <p class="text-center font-mono text-xs text-base-content/20 mt-16">
+      <span id="note-count">{notes.length}</span> note{
+        notes.length !== 1 ? "s" : ""
+      } total
     </p>
-
   </main>
 
   <script is:inline define:vars={{ searchIndex }}>
@@ -135,18 +144,19 @@ const searchIndex = Object.fromEntries(
         noteCards.forEach((card) => {
           const id = card.dataset.id ?? "";
           const tags = card.dataset.tags ? card.dataset.tags.split(",") : [];
-          const show = !query || (
-            isTag
-              ? tags.some((t) => t.includes(query)) || (searchIndex[id] ?? "").includes(`#${query}`)
-              : (searchIndex[id] ?? "").includes(query)
-          );
+          const show =
+            !query ||
+            (isTag
+              ? tags.some((t) => t.includes(query)) ||
+                (searchIndex[id] ?? "").includes(`#${query}`)
+              : (searchIndex[id] ?? "").includes(query));
           card.style.display = show ? "" : "none";
           if (show) visible++;
         });
 
         sections.forEach((section) => {
           const anyVisible = [...section.querySelectorAll(".note-card")].some(
-            (c) => c.style.display !== "none"
+            (c) => c.style.display !== "none",
           );
           section.style.display = anyVisible ? "" : "none";
         });
@@ -164,7 +174,9 @@ const searchIndex = Object.fromEntries(
 
       const urlTag = new URLSearchParams(window.location.search).get("tag");
       if (urlTag) {
-        document.querySelectorAll("[data-search]").forEach((i) => { i.value = `#${urlTag}`; });
+        document.querySelectorAll("[data-search]").forEach((i) => {
+          i.value = `#${urlTag}`;
+        });
         filter(`#${urlTag}`);
       }
     }

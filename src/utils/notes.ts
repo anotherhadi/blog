@@ -1,4 +1,7 @@
-export function getCategory(n: { id: string; data: { category?: string } }): string {
+export function getCategory(n: {
+  id: string;
+  data: { category?: string };
+}): string {
   if (n.data.category) return n.data.category;
   const parts = n.id.split("/");
   return parts.length > 1 ? parts[0] : "General";

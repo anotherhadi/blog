@@ -18,7 +18,9 @@ function isActive(href: string) {
   class="fixed top-0 left-0 right-0 z-[60] h-12 flex items-center px-5"
   style="background: oklch(0% 0 0 / 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid oklch(22% 0 0);"
 >
-  <div class="flex items-center justify-between w-full max-w-screen-xl mx-auto">
+  <div
+    class="flex items-center justify-between w-full max-w-screen-2xl mx-auto"
+  >
     <a
       href="/"
       class="font-mono text-sm text-base-content/40 hover:text-primary transition-colors duration-200 tracking-tight"
@@ -26,7 +28,8 @@ function isActive(href: string) {
       ~/hadi
     </a>
 
-    <div id="oneko-track" class="flex-1 relative h-12 pointer-events-none"></div>
+    <div id="oneko-track" class="flex-1 relative h-12 pointer-events-none">
+    </div>
 
     <nav class="hidden md:flex items-center">
       {
@@ -58,9 +61,15 @@ function isActive(href: string) {
       class="md:hidden flex flex-col gap-1 p-2 text-base-content/40 hover:text-base-content/70 transition-colors"
       aria-label="Toggle menu"
     >
-      <span class="hamburger-line block w-4 h-px bg-current transition-all duration-200"></span>
-      <span class="hamburger-line block w-4 h-px bg-current transition-all duration-200"></span>
-      <span class="hamburger-line block w-4 h-px bg-current transition-all duration-200"></span>
+      <span
+        class="hamburger-line block w-4 h-px bg-current transition-all duration-200"
+      ></span>
+      <span
+        class="hamburger-line block w-4 h-px bg-current transition-all duration-200"
+      ></span>
+      <span
+        class="hamburger-line block w-4 h-px bg-current transition-all duration-200"
+      ></span>
     </button>
   </div>
 </header>
@@ -113,7 +122,11 @@ function isActive(href: string) {
     });
 
     document.addEventListener("click", (e) => {
-      if (open && !btn.contains(e.target as Node) && !menu.contains(e.target as Node)) {
+      if (
+        open &&
+        !btn.contains(e.target as Node) &&
+        !menu.contains(e.target as Node)
+      ) {
         open = false;
         menu.style.display = "none";
         lines[0].style.transform = "";

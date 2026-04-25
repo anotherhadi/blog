@@ -19,8 +19,12 @@ interface Props {
 const { repo } = Astro.props;
 
 const platforms = [
-  ...(repo.mirrors.github ? [{ label: "GitHub", url: repo.mirrors.github }] : []),
-  ...(repo.mirrors.gitlab ? [{ label: "GitLab", url: repo.mirrors.gitlab }] : []),
+  ...(repo.mirrors.github
+    ? [{ label: "GitHub", url: repo.mirrors.github }]
+    : []),
+  ...(repo.mirrors.gitlab
+    ? [{ label: "GitLab", url: repo.mirrors.gitlab }]
+    : []),
   { label: "Gitea", url: repo.html_url },
 ];
 
@@ -46,64 +50,70 @@ const hasMultiplePlatforms = platforms.length > 1;
       </a>
     </h2>
 
-    {repo.description && (
-      <p class="text-base-content/80">{repo.description}</p>
-    )}
+    {repo.description && <p class="text-base-content/80">{repo.description}</p>}
 
     <div class="flex flex-wrap gap-2 mt-2">
-      {repo.topics.map((topic) => (
-        <span class="badge badge-sm rounded-sm badge-soft badge-accent">
-          {topic}
-        </span>
-      ))}
+      {
+        repo.topics.map((topic) => (
+          <span class="badge badge-sm rounded-sm badge-soft badge-accent">
+            {topic}
+          </span>
+        ))
+      }
     </div>
 
     <div class="card-actions justify-end mt-4 gap-2">
-      {repo.website && (
-        
-        <a
-          href={repo.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn-soft btn-sm gap-1"
-        >
-          <ExternalLink class="size-4" />
-          Website
-        </a>
-      )}
-
-      {hasMultiplePlatforms ? (
-        <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-primary btn-sm gap-1">
-            <ExternalLink class="size-4" />
-            View Source
-            <ChevronDown class="size-3" />
-          </div>
-          <ul
-            tabindex="0"
-            class="dropdown-content menu bg-base-100 rounded-xl z-10 w-36 p-1.5 shadow border border-base-200 text-sm"
+      {
+        repo.website && (
+          <a
+            href={repo.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-soft btn-sm gap-1"
           >
-            {platforms.map(({ label, url }) => (
-              <li>
-                <a href={url} target="_blank" rel="noopener noreferrer">
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        
-        <a
-          href={repo.html_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn btn-primary btn-sm gap-1"
-        >
-          <ExternalLink class="size-4" />
-          View on Gitea
-        </a>
-      )}
+            <ExternalLink class="size-4" />
+            Website
+          </a>
+        )
+      }
+
+      {
+        hasMultiplePlatforms ? (
+          <div class="dropdown dropdown-end">
+            <div
+              tabindex="0"
+              role="button"
+              class="btn btn-primary btn-sm gap-1"
+            >
+              <ExternalLink class="size-4" />
+              View Source
+              <ChevronDown class="size-3" />
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content menu bg-base-100 rounded-xl z-10 w-36 p-1.5 shadow border border-base-200 text-sm"
+            >
+              {platforms.map(({ label, url }) => (
+                <li>
+                  <a href={url} target="_blank" rel="noopener noreferrer">
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <a
+            href={repo.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary btn-sm gap-1"
+          >
+            <ExternalLink class="size-4" />
+            View on Gitea
+          </a>
+        )
+      }
     </div>
   </div>
 </article>

@@ -53,28 +53,24 @@ async function checkMirrors(repoName: string): Promise<RepoMirrors> {
 export async function fetchGiteaRepos(): Promise<GiteaRepoWithMirrors[]> {
   try {
     const res = await fetch(
-      `${GITEA_BASE}/api/v1/users/${GITEA_USER}/repos?limit=50&page=1`
+      `${GITEA_BASE}/api/v1/users/${GITEA_USER}/repos?limit=50&page=1`,
     );
     if (!res.ok) throw new Error(`Gitea API: ${res.status}`);
 
     const repos: GiteaRepo[] = await res.json();
 
     const filtered = repos
-      .filter((r) =>
-        !r.fork &&
-        !r.private &&
-        !SKIP_REPOS.includes(r.name)
-      )
+      .filter((r) => !r.fork && !r.private && !SKIP_REPOS.includes(r.name))
       .sort(
         (a, b) =>
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
       );
 
     const reposWithMirrors = await Promise.all(
       filtered.map(async (repo) => ({
         ...repo,
         mirrors: await checkMirrors(repo.name),
-      }))
+      })),
     );
 
     return reposWithMirrors;
@@ -91,18 +87,15 @@ export function getBannerUrl(repo: GiteaRepo): string {
 async function main() {
   console.log("Fetching repos from Gitea...");
   const rawRepos = await fetchGiteaRepos();
-  const repos = rawRepos.map(repo => ({
+  const repos = rawRepos.map((repo) => ({
     ...repo,
-    banner_url: `${GITEA_BASE}/${repo.full_name}/raw/branch/main/.github/assets/banner.png`
+    banner_url: `${GITEA_BASE}/${repo.full_name}/raw/branch/main/.github/assets/banner.png`,
   }));
 
   const dataDir = join(process.cwd(), "src/data");
   await mkdir(dataDir, { recursive: true });
 
-  await Bun.write(
-    join(dataDir, "repos.json"),
-    JSON.stringify(repos, null, 2)
-  );
+  await Bun.write(join(dataDir, "repos.json"), JSON.stringify(repos, null, 2));
 
   console.log(`Saved ${repos.length} repos to src/data/repos.json`);
 }
