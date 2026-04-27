@@ -1,5 +1,5 @@
 ---
-title: "Notes in comming.."
+title: "test2"
 description: ""
 tags: []
 publishDate: 2026-04-24
@@ -10,5 +10,5 @@ publishDate: 2026-04-24
 Salut comment ça va ! $test1
 
 ```bash
-nmap -p $port "$Ip"
+nmap -p $test2 "$test3$test4"
 ```

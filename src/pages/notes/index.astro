@@ -25,31 +25,17 @@ const searchIndex = Object.fromEntries(
 >
   <main class="max-w-4xl mx-auto px-4 py-16 sm:py-20">
     <div class="text-center mb-12">
-      <div class="flex items-center justify-center gap-2 mb-4">
-        <Shield size={20} class="text-primary/60" />
-        <span
-          class="font-mono text-xs text-primary/60 tracking-widest uppercase"
-          >security notes</span
-        >
-      </div>
       <h1 class="text-4xl sm:text-5xl font-bold mb-4">Notes</h1>
-      <p class="text-base-content/50 max-w-md mx-auto">
+      <p class="text-xl text-base-content/70">
         Reference sheets on cybersecurity tools and techniques.
       </p>
     </div>
 
     <div class="mb-12 max-w-sm mx-auto">
-      <div
-        class="flex items-center gap-2 border border-base-300/60 px-3 py-2 bg-base-200/30 focus-within:border-primary/40 transition-colors"
-      >
-        <span class="font-mono text-sm text-base-content/25">›</span>
-        <input
-          data-search
-          type="text"
-          placeholder="search or #tag..."
-          class="bg-transparent font-mono text-sm text-base-content/70 placeholder:text-base-content/25 outline-none w-full"
-        />
-      </div>
+      <label class="input w-full">
+        <span class="text-base-content/25">›</span>
+        <input data-search type="text" placeholder="search or #tag..." />
+      </label>
       <p class="font-mono text-[10px] text-base-content/20 mt-1.5 text-center">
         use #tag to filter by tag
       </p>
@@ -82,18 +68,20 @@ const searchIndex = Object.fromEntries(
                       data-tags={n.data.tags.join(",")}
                     >
                       <div class="flex-1 min-w-0">
-                        <div class="flex items-baseline gap-3 mb-0.5">
+                        <div class="flex flex-col mb-0.5">
                           <span class="font-semibold text-sm group-hover:text-primary transition-colors">
                             {n.data.title}
                           </span>
-                          <span class="hidden sm:block text-xs text-base-content/35 truncate">
-                            {n.data.description}
-                          </span>
+                          {n.data.description && (
+                            <span class="text-xs text-base-content/35 truncate">
+                              {n.data.description}
+                            </span>
+                          )}
                         </div>
                         {n.data.tags.length > 0 && (
                           <div class="flex flex-wrap gap-1 mt-1">
                             {n.data.tags.map((tag) => (
-                              <span class="font-mono text-[10px] px-1.5 py-0.5 border border-base-300/40 text-base-content/25">
+                              <span class="badge badge-ghost badge-xs font-mono text-base-content/30">
                                 {tag}
                               </span>
                             ))}

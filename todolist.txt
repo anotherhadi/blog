@@ -1,0 +1,3 @@
+- Fix left sidebar overflow/minwidth issue
+- Transform to svelte 5 components
+- The cat just TP

@@ -1,8 +1,9 @@
 ---
 import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
-import { Shield, ChevronLeft, List, PanelRight } from "@lucide/astro";
+import { List, PanelRight } from "@lucide/astro";
 import Author from "../../components/Author.astro";
+import NoteVars from "../../components/NoteVars.astro";
 import { getCategory, extractInlineHashtags } from "../../utils/notes";
 
 export async function getStaticPaths() {
@@ -69,6 +70,15 @@ function slugify(text: string) {
     .replace(/ +/g, "-");
 }
 
+const noteVars = [
+  ...new Set(
+    Array.from(
+      (entry.body ?? "").matchAll(/\$([a-zA-Z_][a-zA-Z0-9_]*)/g),
+      (m) => m[1],
+    ),
+  ),
+];
+
 const headings: { depth: number; text: string; id: string }[] = [];
 const headingRe = /^(#{2,4}) (.+)$/gm;
 let hm;
@@ -91,6 +101,26 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
     top: 3rem;
     height: calc(100vh - 3rem);
   }
+
+  /* DaisyUI .menu forces width:fit-content and display:grid on items.
+     Astro scoped styles add [data-astro-cid-*] which raises specificity above DaisyUI's class selectors. */
+  .nav-sidebar {
+    width: 100%;
+  }
+
+  .nav-sidebar a {
+    display: flex;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .nav-sidebar a span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
+  }
 </style>
 
 <Layout
@@ -107,26 +137,27 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
 
           <div class="drawer-content flex flex-col min-w-0">
             <main class="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-10 min-w-0">
-              <div class="max-w-2xl mx-auto lg:mx-0">
+              <div class="max-w-3xl mx-auto lg:mx-0">
                 <div class="flex items-center justify-between mb-6">
-                  <a
-                    href="/notes"
-                    class="inline-flex items-center gap-1 text-sm text-base-content/35 hover:text-base-content/70 transition-colors"
-                  >
-                    <ChevronLeft size={14} />Notes
-                  </a>
+                  <div class="breadcrumbs text-xs font-mono text-base-content/35 p-0">
+                    <ul>
+                      <li><a href="/notes" class="hover:text-base-content/70">notes</a></li>
+                      <li>{getCategory(entry)}</li>
+                    </ul>
+                  </div>
                   <div class="flex items-center gap-2">
                     <label
                       for="nav-drawer"
-                      class="lg:hidden flex items-center gap-1.5 font-mono text-xs text-base-content/40 hover:text-base-content/70 transition-colors border border-base-300/50 px-2 py-1 cursor-pointer"
+                      class="btn btn-ghost btn-xs lg:hidden font-mono text-base-content/40 hover:text-base-content/70 border border-base-300/50"
                     >
                       <List size={11} />
                       nav
                     </label>
+                    <NoteVars vars={noteVars} />
                     <label
                       for="graph-drawer"
                       id="graph-toggle"
-                      class="flex items-center gap-1.5 font-mono text-xs text-base-content/40 hover:text-base-content/70 transition-colors border border-base-300/50 px-2 py-1 cursor-pointer"
+                      class="btn btn-ghost btn-xs font-mono text-base-content/40 hover:text-base-content/70 border border-base-300/50"
                       title="Toggle graph"
                     >
                       <PanelRight size={11} />
@@ -136,19 +167,6 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                 </div>
 
                 <header class="mb-8">
-                  <div class="flex items-center gap-3 mb-5">
-                    <span class="text-xl font-bold tracking-tight">
-                      <span class="text-primary/50 font-mono mr-0.5">/</span>
-                      {getCategory(entry)}
-                    </span>
-                    <span class="text-base-content/20 text-xs">·</span>
-                    <time
-                      datetime={entry.data.publishDate.toISOString()}
-                      class="text-xs text-base-content/35"
-                    >
-                      {formatDate(entry.data.publishDate)}
-                    </time>
-                  </div>
                   <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-3">
                     {entry.data.title}
                   </h1>
@@ -161,7 +179,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                         {entry.data.tags.map((tag) => (
                           <a
                             href={`/notes?tag=${tag}`}
-                            class="font-mono text-[10px] px-1.5 py-0.5 border border-base-300/40 text-base-content/25 hover:text-primary/70 hover:border-primary/40 transition-colors"
+                            class="badge badge-ghost badge-xs font-mono text-base-content/30 hover:text-primary/70 transition-colors"
                           >
                             {tag}
                           </a>
@@ -171,41 +189,36 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                   }
                 </header>
 
-                <div class="border-t border-base-300/30 mb-6"></div>
-
                 {
                   headings.length > 0 && (
-                    <details
-                      class="mb-8 border border-base-300/40 group"
+                    <div
+                      class="collapse collapse-arrow mb-8 border border-base-300/40"
                       style="background: oklch(4% 0 0);"
                     >
-                      <summary class="px-3 py-2 flex items-center gap-2 cursor-pointer list-none select-none font-mono text-xs text-base-content/35 hover:text-base-content/60 transition-colors">
+                      <input type="checkbox" />
+                      <div class="collapse-title font-mono text-xs text-base-content/35 flex items-center gap-2 py-2 px-3 min-h-0">
                         <span class="text-primary/40">§</span>
-                        <span>table of contents</span>
-                        <span class="ml-auto opacity-50 group-open:hidden">+</span>
-                        <span class="ml-auto opacity-50 hidden group-open:inline">−</span>
-                      </summary>
-                      <nav class="px-3 pb-3 pt-1 border-t border-base-300/30 space-y-0.5">
-                        {headings.map((h) => (
-                          <a
-                            href={`#${h.id}`}
-                            class:list={[
-                              "block text-xs text-base-content/45 hover:text-base-content/80 transition-colors py-0.5",
-                              h.depth === 3
-                                ? "pl-4"
-                                : h.depth === 4
-                                  ? "pl-8"
-                                  : "",
-                            ]}
-                          >
-                            <span class="font-mono text-primary/25 mr-1.5">
-                              {"#".repeat(h.depth)}
-                            </span>
-                            {h.text}
-                          </a>
-                        ))}
-                      </nav>
-                    </details>
+                        table of contents
+                      </div>
+                      <div class="collapse-content px-0 pb-0">
+                        <nav class="px-3 pb-3 pt-1 border-t border-base-300/30 space-y-0.5">
+                          {headings.map((h) => (
+                            <a
+                              href={`#${h.id}`}
+                              class:list={[
+                                "block text-xs text-base-content/45 hover:text-base-content/80 transition-colors py-0.5",
+                                h.depth === 3 ? "pl-4" : h.depth === 4 ? "pl-8" : "",
+                              ]}
+                            >
+                              <span class="font-mono text-primary/25 mr-1.5">
+                                {"#".repeat(h.depth)}
+                              </span>
+                              {h.text}
+                            </a>
+                          ))}
+                        </nav>
+                      </div>
+                    </div>
                   )
                 }
 
@@ -220,8 +233,8 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                   [&_ul_li]:before:content-['–'] [&_ul_li]:before:text-base-content/25 [&_ul_li]:before:mr-2 [&_ul_li]:before:font-mono
                   [&_ol]:mb-4 [&_ol]:ml-5 [&_ol]:list-decimal [&_ol]:space-y-1
                   [&_li]:text-base-content/75
-                  [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs [&_code]:bg-base-200 [&_code]:text-primary/80 [&_code]:border [&_code]:border-base-300/50
-                  [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4 [&_pre]:bg-base-200/60 [&_pre]:border [&_pre]:border-base-300/50 [&_pre]:text-xs
+                  [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-field [&_code]:font-mono [&_code]:text-xs [&_code]:bg-base-200 [&_code]:text-primary/80 [&_code]:border [&_code]:border-base-300/50
+                  [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4 [&_pre]:rounded-box [&_pre]:bg-base-200/60 [&_pre]:border [&_pre]:border-base-300/50 [&_pre]:text-xs
                   [&_pre_code]:bg-transparent [&_pre_code]:border-0 [&_pre_code]:p-0 [&_pre_code]:text-base-content/80
                   [&_blockquote]:border-l-2 [&_blockquote]:border-primary/25 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4 [&_blockquote]:text-base-content/50
                   [&_table]:w-full [&_table]:mb-6 [&_table]:text-xs [&_table]:border-collapse
@@ -255,65 +268,53 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
               class="w-56 flex flex-col border-r border-base-300/60 h-full"
               style="background: oklch(4% 0 0);"
             >
-              <div class="px-4 py-4 border-b border-base-300/40">
-                <a
-                  href="/notes"
-                  class="flex items-center gap-2 mb-3 hover:text-primary transition-colors"
-                >
-                  <Shield size={13} class="text-primary/60 shrink-0" />
-                  <span class="font-mono text-xs text-primary/60 tracking-widest uppercase">
-                    security notes
-                  </span>
-                </a>
-                <div class="flex items-center gap-1.5 bg-base-200/50 px-2 py-1.5 border border-base-300/40">
-                  <span class="font-mono text-xs text-base-content/30">›</span>
+              <div class="px-3 py-3 border-b border-base-300/40">
+                <label class="input input-sm w-full font-mono text-xs border-base-300/40 bg-base-200/50">
+                  <span class="text-base-content/30">›</span>
                   <input
                     data-search
                     type="text"
                     placeholder="search..."
-                    class="bg-transparent font-mono text-xs text-base-content/70 placeholder:text-base-content/25 outline-none w-full"
+                    class="text-base-content/70 placeholder:text-base-content/25"
                   />
-                </div>
+                </label>
               </div>
-              <nav class="px-3 py-3 flex-1 overflow-y-auto">
+              <ul class="nav-sidebar menu menu-xs flex-1 overflow-y-auto px-2 py-2 bg-transparent">
                 {
                   categories.map((cat) => (
-                    <div class="mb-4">
-                      <div class="px-1 mb-1.5">
-                        <span class="text-sm font-bold tracking-tight">
-                          <span class="text-primary/50 font-mono mr-0.5">/</span>
-                          {cat}
-                        </span>
-                      </div>
-                      <ul class="ml-3 space-y-0.5 border-l border-base-300/30 pl-2">
-                        {sortedNotes
-                          .filter((n) => getCategory(n) === cat)
-                          .map((n) => (
-                            <li>
-                              <a
-                                href={`/notes/${n.id}`}
-                                class:list={[
-                                  "nav-item font-mono text-xs block py-0.5 px-1 truncate transition-colors",
-                                  n.id === entry.id
-                                    ? "text-primary bg-primary/8"
-                                    : "text-base-content/45 hover:text-base-content/80 hover:bg-base-200/30",
-                                ]}
-                                data-title={n.data.title.toLowerCase()}
-                                data-tags={[
-                                  ...n.data.tags,
-                                  ...extractInlineHashtags(n.body ?? ""),
-                                ].join(",")}
-                              >
-                                {n.id === entry.id ? "▶ " : ""}
-                                {n.data.title}
-                              </a>
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
+                    <li class="w-full">
+                      <details open={cat === getCategory(entry)}>
+                        <summary class="font-bold tracking-tight text-sm">
+                          <span class="text-primary/50 font-mono">/</span>{cat}
+                        </summary>
+                        <ul class="w-full">
+                          {sortedNotes
+                            .filter((n) => getCategory(n) === cat)
+                            .map((n) => (
+                              <li class="w-full">
+                                <a
+                                  href={`/notes/${n.id}`}
+                                  class:list={[
+                                    "nav-item font-mono text-xs tooltip tooltip-right",
+                                    n.id === entry.id ? "active" : "",
+                                  ]}
+                                  data-tip={n.data.title}
+                                  data-title={n.data.title.toLowerCase()}
+                                  data-tags={[
+                                    ...n.data.tags,
+                                    ...extractInlineHashtags(n.body ?? ""),
+                                  ].join(",")}
+                                >
+                                  <span>{n.data.title}</span>
+                                </a>
+                              </li>
+                            ))}
+                        </ul>
+                      </details>
+                    </li>
                   ))
                 }
-              </nav>
+              </ul>
             </aside>
           </div>
         </div>
@@ -404,7 +405,15 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
             )
           }
 
-          <div class="px-4 py-6">
+          <div class="px-4 pt-4 pb-1 border-t border-base-300/40">
+            <time
+              datetime={entry.data.publishDate.toISOString()}
+              class="font-mono text-[10px] text-base-content/30 uppercase tracking-widest"
+            >
+              {formatDate(entry.data.publishDate)}
+            </time>
+          </div>
+          <div class="px-4 py-4">
             <Author />
           </div>
         </aside>
