@@ -1,0 +1,40 @@
+---
+interface Props {
+  headings: { depth: number; text: string; id: string }[];
+}
+
+const { headings } = Astro.props;
+---
+
+{
+  headings.length > 0 && (
+    <div
+      class="collapse collapse-arrow mb-8 border border-base-300/40"
+      style="background: oklch(4% 0 0);"
+    >
+      <input type="checkbox" />
+      <div class="collapse-title font-mono text-xs text-base-content/35 flex items-center gap-2 py-2 px-3 min-h-0">
+        <span class="text-primary/40">§</span>
+        table of contents
+      </div>
+      <div class="collapse-content px-0 pb-0">
+        <nav class="px-3 pb-3 pt-1 border-t border-base-300/30 space-y-0.5">
+          {headings.map((h) => (
+            <a
+              href={`#${h.id}`}
+              class:list={[
+                "block text-xs text-base-content/45 hover:text-base-content/80 transition-colors py-0.5",
+                h.depth === 3 ? "pl-4" : h.depth === 4 ? "pl-8" : "",
+              ]}
+            >
+              <span class="font-mono text-primary/25 mr-1.5">
+                {"#".repeat(h.depth)}
+              </span>
+              {h.text}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  )
+}

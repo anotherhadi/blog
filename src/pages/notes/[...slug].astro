@@ -2,9 +2,15 @@
 import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { List, PanelRight } from "@lucide/astro";
-import Author from "../../components/Author.astro";
-import NoteVars from "../../components/NoteVars.astro";
-import { getCategory, extractInlineHashtags } from "../../utils/notes";
+import NoteTOC from "../../components/NoteTOC.astro";
+import NoteNavSidebar from "../../components/NoteNavSidebar.astro";
+import NoteGraphSidebar from "../../components/NoteGraphSidebar.astro";
+import NoteVars from "../../components/NoteVars.svelte";
+import {
+  getCategory,
+  extractLinks,
+  extractHeadings,
+} from "../../utils/notes";
 
 export async function getStaticPaths() {
   const notes = await getCollection("notes");
@@ -22,22 +28,6 @@ const sortedNotes = allNotes.sort((a, b) =>
   a.data.title.localeCompare(b.data.title),
 );
 const categories = [...new Set(allNotes.map(getCategory))].sort();
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function extractLinks(body: string): string[] {
-  const re = /\(\/notes\/([^)#\s]+)(?:#[^)\s]*)?\)/g;
-  const ids: string[] = [];
-  let m;
-  while ((m = re.exec(body)) !== null) ids.push(m[1]);
-  return [...new Set(ids)];
-}
 
 const allLinks = Object.fromEntries(
   allNotes.map((n) => [n.id, extractLinks(n.body ?? "")]),
@@ -61,15 +51,6 @@ const graphEdges = [
   ...backlinks.map((n) => ({ from: n.id, to: entry.id })),
 ];
 
-// Mirrors github-slugger: keeps _, keeps unicode letters/numbers, spaces → hyphens
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s_-]/gu, "")
-    .trim()
-    .replace(/ +/g, "-");
-}
-
 const noteVars = [
   ...new Set(
     Array.from(
@@ -79,20 +60,7 @@ const noteVars = [
   ),
 ];
 
-const headings: { depth: number; text: string; id: string }[] = [];
-const headingRe = /^(#{2,4}) (.+)$/gm;
-let hm;
-while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
-  const raw = hm[2]
-    .trim()
-    .replace(/`[^`]*`/g, "")
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/(?<!\p{L}\p{N})__(.*?)__(?!\p{L}\p{N})/gu, "$1")
-    .replace(/\*(.*?)\*/g, "$1")
-    .replace(/(?<!\p{L}\p{N})_(.*?)_(?!\p{L}\p{N})/gu, "$1")
-    .replace(/[*]/g, "");
-  headings.push({ depth: hm[1].length, text: raw, id: slugify(raw) });
-}
+const headings = extractHeadings(entry.body ?? "");
 ---
 
 <style>
@@ -100,26 +68,6 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
   .drawer.xl\:drawer-open > .drawer-side {
     top: 3rem;
     height: calc(100vh - 3rem);
-  }
-
-  /* DaisyUI .menu forces width:fit-content and display:grid on items.
-     Astro scoped styles add [data-astro-cid-*] which raises specificity above DaisyUI's class selectors. */
-  .nav-sidebar {
-    width: 100%;
-  }
-
-  .nav-sidebar a {
-    display: flex;
-    overflow: hidden;
-    min-width: 0;
-  }
-
-  .nav-sidebar a span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: 0;
-    flex: 1;
   }
 </style>
 
@@ -139,9 +87,16 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
             <main class="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-10 min-w-0">
               <div class="max-w-3xl mx-auto lg:mx-0">
                 <div class="flex items-center justify-between mb-6">
-                  <div class="breadcrumbs text-xs font-mono text-base-content/35 p-0">
+                  <div
+                    class="breadcrumbs text-xs font-mono text-base-content/35 p-0"
+                  >
                     <ul>
-                      <li><a href="/notes" class="hover:text-base-content/70">notes</a></li>
+                      <li>
+                        <a
+                          href="/notes"
+                          class="hover:text-base-content/70"
+                        >notes</a>
+                      </li>
                       <li>{getCategory(entry)}</li>
                     </ul>
                   </div>
@@ -153,7 +108,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                       <List size={11} />
                       nav
                     </label>
-                    <NoteVars vars={noteVars} />
+                    <NoteVars client:load vars={noteVars} />
                     <label
                       for="graph-drawer"
                       id="graph-toggle"
@@ -167,7 +122,9 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                 </div>
 
                 <header class="mb-8">
-                  <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-3">
+                  <h1
+                    class="text-4xl sm:text-5xl font-bold tracking-tight mb-3"
+                  >
                     {entry.data.title}
                   </h1>
                   <p class="text-base-content/50 mb-4">
@@ -189,38 +146,7 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                   }
                 </header>
 
-                {
-                  headings.length > 0 && (
-                    <div
-                      class="collapse collapse-arrow mb-8 border border-base-300/40"
-                      style="background: oklch(4% 0 0);"
-                    >
-                      <input type="checkbox" />
-                      <div class="collapse-title font-mono text-xs text-base-content/35 flex items-center gap-2 py-2 px-3 min-h-0">
-                        <span class="text-primary/40">§</span>
-                        table of contents
-                      </div>
-                      <div class="collapse-content px-0 pb-0">
-                        <nav class="px-3 pb-3 pt-1 border-t border-base-300/30 space-y-0.5">
-                          {headings.map((h) => (
-                            <a
-                              href={`#${h.id}`}
-                              class:list={[
-                                "block text-xs text-base-content/45 hover:text-base-content/80 transition-colors py-0.5",
-                                h.depth === 3 ? "pl-4" : h.depth === 4 ? "pl-8" : "",
-                              ]}
-                            >
-                              <span class="font-mono text-primary/25 mr-1.5">
-                                {"#".repeat(h.depth)}
-                              </span>
-                              {h.text}
-                            </a>
-                          ))}
-                        </nav>
-                      </div>
-                    </div>
-                  )
-                }
+                <NoteTOC headings={headings} />
 
                 <div
                   class="note-content text-sm leading-relaxed text-base-content/80
@@ -246,11 +172,19 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
                   <Content />
                 </div>
 
-                <div class="border-t border-base-300/30 mt-12 pt-6 flex items-center justify-between font-mono text-[10px] text-base-content/25">
-                  <a href="/notes" class="hover:text-base-content/50 transition-colors">
+                <div
+                  class="border-t border-base-300/30 mt-12 pt-6 flex items-center justify-between font-mono text-[10px] text-base-content/25"
+                >
+                  <a
+                    href="/notes"
+                    class="hover:text-base-content/50 transition-colors"
+                  >
                     ← all notes
                   </a>
-                  <a href="/" class="hover:text-base-content/50 transition-colors">
+                  <a
+                    href="/"
+                    class="hover:text-base-content/50 transition-colors"
+                  >
                     ~/hadi
                   </a>
                 </div>
@@ -264,58 +198,11 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
               aria-label="close sidebar"
               class="drawer-overlay"
             ></label>
-            <aside
-              class="w-56 flex flex-col border-r border-base-300/60 h-full"
-              style="background: oklch(4% 0 0);"
-            >
-              <div class="px-3 py-3 border-b border-base-300/40">
-                <label class="input input-sm w-full font-mono text-xs border-base-300/40 bg-base-200/50">
-                  <span class="text-base-content/30">›</span>
-                  <input
-                    data-search
-                    type="text"
-                    placeholder="search..."
-                    class="text-base-content/70 placeholder:text-base-content/25"
-                  />
-                </label>
-              </div>
-              <ul class="nav-sidebar menu menu-xs flex-1 overflow-y-auto px-2 py-2 bg-transparent">
-                {
-                  categories.map((cat) => (
-                    <li class="w-full">
-                      <details open={cat === getCategory(entry)}>
-                        <summary class="font-bold tracking-tight text-sm">
-                          <span class="text-primary/50 font-mono">/</span>{cat}
-                        </summary>
-                        <ul class="w-full">
-                          {sortedNotes
-                            .filter((n) => getCategory(n) === cat)
-                            .map((n) => (
-                              <li class="w-full">
-                                <a
-                                  href={`/notes/${n.id}`}
-                                  class:list={[
-                                    "nav-item font-mono text-xs tooltip tooltip-right",
-                                    n.id === entry.id ? "active" : "",
-                                  ]}
-                                  data-tip={n.data.title}
-                                  data-title={n.data.title.toLowerCase()}
-                                  data-tags={[
-                                    ...n.data.tags,
-                                    ...extractInlineHashtags(n.body ?? ""),
-                                  ].join(",")}
-                                >
-                                  <span>{n.data.title}</span>
-                                </a>
-                              </li>
-                            ))}
-                        </ul>
-                      </details>
-                    </li>
-                  ))
-                }
-              </ul>
-            </aside>
+            <NoteNavSidebar
+              notes={sortedNotes}
+              currentEntry={entry}
+              categories={categories}
+            />
           </div>
         </div>
       </div>
@@ -326,107 +213,115 @@ while ((hm = headingRe.exec(entry.body ?? "")) !== null) {
           aria-label="close sidebar"
           class="drawer-overlay xl:hidden"
         ></label>
-        <aside
-          id="right-sidebar"
-          class="w-52 flex flex-col border-l border-base-300/60 h-full overflow-y-auto"
-          style="background: oklch(4% 0 0);"
-        >
-          <div class="border-b border-base-300/40">
-            <p class="font-mono text-[10px] text-base-content/25 uppercase tracking-widest px-3 pt-3 pb-2">
-              graph
-            </p>
-            <canvas
-              id="note-graph"
-              height="190"
-              role="img"
-              aria-label="Graph of linked notes"
-              style="width:100%; display:block; background: oklch(2% 0 0); cursor:default;"
-            ></canvas>
-            {
-              graphNodes.length < 2 && (
-                <p class="font-mono text-[9px] text-base-content/20 text-center py-2">
-                  no connections yet
-                </p>
-              )
-            }
-          </div>
-
-          {
-            forwardLinks.length > 0 && (
-              <div class="p-3 border-b border-base-300/40">
-                <p class="font-mono text-[10px] text-base-content/25 uppercase tracking-widest mb-2">
-                  links
-                </p>
-                <ul class="space-y-1">
-                  {forwardLinks.map((n) => (
-                    <li>
-                      <a
-                        href={`/notes/${n.id}`}
-                        class="font-mono text-xs text-base-content/45 hover:text-primary/80 transition-colors block truncate"
-                      >
-                        → {n.data.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          }
-
-          {
-            backlinks.length > 0 && (
-              <div class="p-3">
-                <p class="font-mono text-[10px] text-base-content/25 uppercase tracking-widest mb-2">
-                  backlinks
-                </p>
-                <ul class="space-y-1">
-                  {backlinks.map((n) => (
-                    <li>
-                      <a
-                        href={`/notes/${n.id}`}
-                        class="font-mono text-xs text-base-content/45 hover:text-primary/80 transition-colors block truncate"
-                      >
-                        ← {n.data.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          }
-
-          {
-            forwardLinks.length === 0 && backlinks.length === 0 && (
-              <div class="p-3">
-                <p class="font-mono text-[9px] text-base-content/20">
-                  no linked notes
-                </p>
-              </div>
-            )
-          }
-
-          <div class="px-4 pt-4 pb-1 border-t border-base-300/40">
-            <time
-              datetime={entry.data.publishDate.toISOString()}
-              class="font-mono text-[10px] text-base-content/30 uppercase tracking-widest"
-            >
-              {formatDate(entry.data.publishDate)}
-            </time>
-          </div>
-          <div class="px-4 py-4">
-            <Author />
-          </div>
-        </aside>
+        <NoteGraphSidebar
+          entry={entry}
+          graphNodes={graphNodes}
+          graphEdges={graphEdges}
+          forwardLinks={forwardLinks}
+          backlinks={backlinks}
+        />
       </div>
     </div>
-
-    <script is:inline define:vars={{ graphNodes, graphEdges }}>
-      window.__graphNodes = graphNodes;
-      window.__graphEdges = graphEdges;
-    </script>
-
-    <script>
-      import "../../utils/notes-graph.ts";
-    </script>
   </main>
 </Layout>
+
+<script>
+  function injectHeadingAnchors() {
+    if (!document.getElementById("heading-anchor-styles")) {
+      const s = document.createElement("style");
+      s.id = "heading-anchor-styles";
+      s.textContent = `
+        .note-content h2, .note-content h3, .note-content h4 {
+          display: flex !important;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0;
+        }
+        .heading-anchor {
+          display: inline-flex;
+          align-items: center;
+          flex-shrink: 0;
+          margin-left: 0.4em;
+          color: oklch(38% 0 0);
+          opacity: 0;
+          transition: opacity 120ms, color 120ms;
+          text-decoration: none;
+        }
+        .note-content h2:hover .heading-anchor,
+        .note-content h3:hover .heading-anchor,
+        .note-content h4:hover .heading-anchor { opacity: 1; }
+        .heading-anchor:hover, .heading-anchor.copied { color: oklch(71% 0.0863 296.59); opacity: 1; }
+      `;
+      document.head.appendChild(s);
+    }
+
+    document
+      .querySelectorAll(".note-content h2, .note-content h3, .note-content h4")
+      .forEach((heading) => {
+        if (!heading.id || heading.querySelector(".heading-anchor")) return;
+        const anchor = document.createElement("a");
+        anchor.href = `#${heading.id}`;
+        anchor.className = "heading-anchor";
+        anchor.setAttribute("aria-label", "Copy link to section");
+        anchor.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
+        anchor.addEventListener("click", (e) => {
+          e.preventDefault();
+          const url = `${location.origin}${location.pathname}#${heading.id}`;
+          navigator.clipboard.writeText(url).then(() => {
+            anchor.classList.add("copied");
+            setTimeout(() => anchor.classList.remove("copied"), 1800);
+          });
+          history.pushState(null, "", `#${heading.id}`);
+        });
+        heading.appendChild(anchor);
+      });
+  }
+
+  function initXlGraphToggle() {
+    const graphDrawer = document.getElementById(
+      "graph-drawer",
+    ) as HTMLInputElement | null;
+    if (!graphDrawer) return;
+
+    const outerDrawer = graphDrawer.closest<HTMLElement>(".drawer.drawer-end");
+    const xlQuery = window.matchMedia("(min-width: 1280px)");
+    const STORAGE_KEY = "notes-graph-sidebar";
+
+    function setXlSidebar(open: boolean) {
+      if (!outerDrawer) return;
+      if (open) {
+        outerDrawer.classList.add("xl:drawer-open");
+      } else {
+        outerDrawer.classList.remove("xl:drawer-open");
+      }
+      localStorage.setItem(STORAGE_KEY, open ? "1" : "0");
+    }
+
+    const graphToggle = document.getElementById("graph-toggle");
+    graphToggle?.addEventListener("click", (e) => {
+      if (!xlQuery.matches) return;
+      e.preventDefault();
+      setXlSidebar(!outerDrawer?.classList.contains("xl:drawer-open"));
+    });
+
+    if (xlQuery.matches) {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      // Open by default unless user explicitly closed it
+      setXlSidebar(saved !== "0");
+    }
+
+    xlQuery.addEventListener("change", (e) => {
+      if (!e.matches) {
+        outerDrawer?.classList.remove("xl:drawer-open");
+      } else {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        setXlSidebar(saved !== "0");
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    injectHeadingAnchors();
+    initXlGraphToggle();
+  });
+</script>
