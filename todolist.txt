@@ -1,2 +1,0 @@
-- Fix left sidebar overflow/minwidth issue
-- The cat just TP

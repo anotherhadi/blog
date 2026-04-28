@@ -3,7 +3,7 @@ import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { List, PanelRight } from "@lucide/astro";
 import NoteTOC from "../../components/NoteTOC.astro";
-import NoteNavSidebar from "../../components/NoteNavSidebar.astro";
+import NoteNavSidebar from "../../components/NoteNavSidebar.svelte";
 import NoteGraphSidebar from "../../components/NoteGraphSidebar.astro";
 import NoteVars from "../../components/NoteVars.svelte";
 import {
@@ -199,6 +199,7 @@ const headings = extractHeadings(entry.body ?? "");
               class="drawer-overlay"
             ></label>
             <NoteNavSidebar
+              client:load
               notes={sortedNotes}
               currentEntry={entry}
               categories={categories}
