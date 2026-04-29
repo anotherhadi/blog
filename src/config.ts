@@ -9,7 +9,7 @@ export interface SocialLinks {
   twitter?: string;
   bluesky?: string;
   instagram?: string;
-  youTube?: string;
+  youtube?: string;
   codetips?: string;
   kofi?: string;
   medium?: string;

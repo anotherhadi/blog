@@ -2,21 +2,13 @@
 import type { CollectionEntry } from "astro:content";
 import TagBadge from "./TagBadge.astro";
 import { Image } from "astro:assets";
+import { formatDate } from "../utils/notes";
 
 interface Props {
   post: CollectionEntry<"blog">;
 }
 
 const { post } = Astro.props;
-
-function formatDate(date: Date) {
-  const options: Intl.DateTimeFormatOptions = {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  };
-  return date.toLocaleDateString("en-US", options);
-}
 ---
 
 <article

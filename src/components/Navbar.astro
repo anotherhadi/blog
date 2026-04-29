@@ -110,8 +110,6 @@ function isActive(href: string) {
     if (!btn || !menu) return;
     const lines = btn.querySelectorAll<HTMLElement>(".hamburger-line");
     let open = false;
-
-    open = false;
     menu.style.display = "none";
     lines[0].style.transform = "";
     lines[1].style.opacity = "";

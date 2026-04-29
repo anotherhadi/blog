@@ -7,16 +7,7 @@ export function getCategory(n: {
   return parts.length > 1 ? parts[0] : "General";
 }
 
-export function extractInlineHashtags(body: string): string[] {
-  const re = /#(\w+)/g;
-  const tags: string[] = [];
-  let m;
-  while ((m = re.exec(body)) !== null) tags.push(m[1].toLowerCase());
-  return [...new Set(tags)];
-}
-
-// Mirrors github-slugger: keeps _, keeps unicode letters/numbers, spaces → hyphens
-export function slugify(text: string): string {
+function slugify(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s_-]/gu, "")
@@ -34,7 +25,7 @@ export function extractLinks(body: string): string[] {
 
 export function formatDate(date: Date): string {
   return date.toLocaleDateString("en-US", {
-    month: "short",
+    month: "long",
     day: "numeric",
     year: "numeric",
   });

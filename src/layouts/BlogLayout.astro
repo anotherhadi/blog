@@ -6,6 +6,7 @@ import BackToTop from "../components/BackToTop.astro";
 import { ChevronLeft } from "@lucide/astro";
 import { parse } from "node-html-parser";
 import Author from "../components/Author.astro";
+import { formatDate } from "../utils/notes";
 
 interface Props {
   title: string;
@@ -18,14 +19,6 @@ interface Props {
 
 const { title, description, publishDate, updatedDate, image, tags } =
   Astro.props;
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 const content = await Astro.slots.render("default");
 const wordCount = content.split(/\s+/).length;

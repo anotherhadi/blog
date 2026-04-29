@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, FolderCode, Key, Rss } from "@lucide/astro";
 import { Image } from "astro:assets";
+import type { SocialLinks } from "../config";
 
 interface Props {
   name: string;
@@ -8,19 +9,7 @@ interface Props {
   description: string;
   avatar: any;
   location?: string;
-  socialLinks?: {
-    github?: string;
-    gitlab?: string;
-    gitea?: string;
-    linkedin?: string;
-    twitter?: string;
-    bluesky?: string;
-    instagram?: string;
-    youTube?: string;
-    medium?: string;
-    kofi?: string;
-    codetips?: string;
-  };
+  socialLinks?: SocialLinks;
   gpgKey?: string;
   rssFeed?: string;
 }
@@ -205,10 +194,10 @@ const {
                 </a>
               </div>
             )}
-            {socialLinks.youTube && (
+            {socialLinks.youtube && (
               <div class="tooltip" data-tip="Youtube">
                 <a
-                  href={socialLinks.youTube}
+                  href={socialLinks.youtube}
                   class="btn btn-circle btn-ghost"
                   aria-label="YouTube"
                   target="_blank"
