@@ -149,10 +149,9 @@
               transition:slide={{ duration: 180 }}
             >
               {#each catNotes as note}
-                <li>
+                <li class="tooltip tooltip-right w-full" data-tip={note.data.title}>
                   <a
                     href={`/notes/${note.id}`}
-                    title={note.data.title}
                     class="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-mono truncate transition-colors duration-150
                       {currentEntry && note.id === currentEntry.id
                       ? 'text-primary/90 bg-primary/10'
