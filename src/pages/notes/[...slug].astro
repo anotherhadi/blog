@@ -6,11 +6,7 @@ import NoteTOC from "../../components/NoteTOC.astro";
 import NoteNavSidebar from "../../components/NoteNavSidebar.svelte";
 import NoteGraphSidebar from "../../components/NoteGraphSidebar.astro";
 import NoteVars from "../../components/NoteVars.svelte";
-import {
-  getCategory,
-  extractLinks,
-  extractHeadings,
-} from "../../utils/notes";
+import { getCategory, extractLinks, extractHeadings } from "../../utils/notes";
 
 export async function getStaticPaths() {
   const notes = await getCollection("notes");
@@ -41,7 +37,11 @@ const backlinks = allNotes.filter(
 
 const graphNodes = [
   { id: entry.id, title: entry.data.title, current: true },
-  ...forwardLinks.map((n) => ({ id: n.id, title: n.data.title, current: false })),
+  ...forwardLinks.map((n) => ({
+    id: n.id,
+    title: n.data.title,
+    current: false,
+  })),
   ...backlinks
     .filter((n) => !forwardLinks.some((f) => f.id === n.id))
     .map((n) => ({ id: n.id, title: n.data.title, current: false })),
@@ -72,7 +72,7 @@ const headings = extractHeadings(entry.body ?? "");
 </style>
 
 <Layout
-  title={`${entry.data.title} — Security Notes`}
+  title={`${entry.data.title} - Security Notes`}
   description={entry.data.description}
 >
   <main class="max-w-screen-2xl mx-auto">
@@ -92,12 +92,24 @@ const headings = extractHeadings(entry.body ?? "");
                   >
                     <ul>
                       <li>
-                        <a
-                          href="/notes"
-                          class="hover:text-base-content/70"
-                        >notes</a>
+                        <a href="/notes" class="hover:text-base-content/70"
+                          >notes</a
+                        >
                       </li>
-                      <li>{getCategory(entry)}</li>
+                      <li>
+                        {
+                          entry.id.includes("/") ? (
+                            <a
+                              href={`/notes/${getCategory(entry)}`}
+                              class="hover:text-base-content/70"
+                            >
+                              {getCategory(entry)}
+                            </a>
+                          ) : (
+                            getCategory(entry)
+                          )
+                        }
+                      </li>
                     </ul>
                   </div>
                   <div class="flex items-center gap-2">
@@ -196,8 +208,7 @@ const headings = extractHeadings(entry.body ?? "");
             <label
               for="nav-drawer"
               aria-label="close sidebar"
-              class="drawer-overlay"
-            ></label>
+              class="drawer-overlay"></label>
             <NoteNavSidebar
               client:load
               notes={sortedNotes}
@@ -212,8 +223,7 @@ const headings = extractHeadings(entry.body ?? "");
         <label
           for="graph-drawer"
           aria-label="close sidebar"
-          class="drawer-overlay xl:hidden"
-        ></label>
+          class="drawer-overlay xl:hidden"></label>
         <NoteGraphSidebar
           entry={entry}
           graphNodes={graphNodes}
