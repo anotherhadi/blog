@@ -22,19 +22,22 @@ const searchNotes = sortedNotes.map((n) => ({
 ---
 
 <Layout
-  title="Security Notes - Another Hadi"
-  description="Reference notes on cybersecurity tools and techniques."
+  title="Infosec Notes - Another Hadi"
+  description="Cheatsheets on cybersecurity tools and techniques."
 >
   <main class="max-w-4xl mx-auto px-4 py-16 sm:py-20">
     <div class="text-center mb-12">
-      <h1 class="text-4xl sm:text-5xl font-bold mb-4">Notes</h1>
+      <h1 class="text-4xl sm:text-5xl font-bold mb-4">Infosec Notes</h1>
       <p class="text-xl text-base-content/70">
-        Reference sheets on cybersecurity tools and techniques.
+        Cheat sheets on cybersecurity tools and techniques.
       </p>
     </div>
-    <div class="text-xs font-mono text-base-content/25 border border-base-300/30 rounded-box px-4 py-3 mb-10 max-w-xl mx-auto text-center leading-relaxed">
-      All content is intended for educational purposes, CTF challenges, and authorized penetration testing only.
-      Do not use any of this against systems you do not own or have explicit permission to test.
+    <div
+      class="text-xs font-mono text-base-content/25 border border-base-300/30 rounded-box px-4 py-3 mb-10 max-w-xl mx-auto text-center leading-relaxed"
+    >
+      All content is intended for educational purposes, CTF challenges, and
+      authorized penetration testing only. Do not use any of this against
+      systems you do not own or have explicit permission to test.
     </div>
     <NotesSearch client:load notes={searchNotes} />
   </main>

@@ -4,7 +4,7 @@ const pathname = Astro.url.pathname;
 const links = [
   { href: "/", label: "home" },
   { href: "/blog", label: "blog" },
-  { href: "/notes", label: "notes" },
+  { href: "/notes", label: "infosec notes" },
   { href: "/projects", label: "projects" },
 ];
 
@@ -28,7 +28,11 @@ function isActive(href: string) {
       ~/hadi
     </a>
 
-    <div id="oneko-track" transition:persist class="flex-1 relative h-12 pointer-events-none">
+    <div
+      id="oneko-track"
+      transition:persist
+      class="flex-1 relative h-12 pointer-events-none"
+    >
     </div>
 
     <nav class="hidden md:flex items-center">
