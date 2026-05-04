@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
 
   interface Props {
     vars: string[];
@@ -8,7 +8,7 @@
   const { vars }: Props = $props();
 
   let values = $state<Record<string, string>>(
-    Object.fromEntries(vars.map((v) => [v, ""])),
+    untrack(() => Object.fromEntries(vars.map((v) => [v, ""]))),
   );
   let open = $state(false);
   let applied = $state(false);
@@ -71,12 +71,14 @@
           {#each vars as v}
             <div class="flex items-center gap-3">
               <label
+                for={`var-${v}`}
                 class="font-mono text-xs text-primary/70 w-36 shrink-0 truncate"
                 title={`$${v}`}
               >
                 ${v}
               </label>
               <input
+                id={`var-${v}`}
                 type="text"
                 bind:value={values[v]}
                 placeholder={`$${v}`}

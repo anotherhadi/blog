@@ -269,6 +269,7 @@
   });
 </script>
 
+<!-- svelte-ignore a11y_no_interactive_element_to_noninteractive_role -->
 <canvas
   bind:this={canvas}
   height="190"
