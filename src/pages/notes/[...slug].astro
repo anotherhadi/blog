@@ -64,10 +64,12 @@ const headings = extractHeadings(entry.body ?? "");
 ---
 
 <style>
-  .drawer.lg\:drawer-open > .drawer-side,
-  .drawer.xl\:drawer-open > .drawer-side {
-    top: 3rem;
-    height: calc(100vh - 3rem);
+  @media (min-width: 1024px) {
+    .drawer.lg\:drawer-open > .drawer-side,
+    .drawer.xl\:drawer-open > .drawer-side {
+      top: 3rem;
+      height: calc(100vh - 3rem);
+    }
   }
 </style>
 
@@ -76,12 +78,12 @@ const headings = extractHeadings(entry.body ?? "");
   description={entry.data.description}
 >
   <main class="max-w-screen-2xl mx-auto">
-    <div class="drawer drawer-end xl:drawer-open min-h-[calc(100vh-3rem)]">
-      <input id="graph-drawer" type="checkbox" class="drawer-toggle" />
+    <div class="drawer lg:drawer-open min-h-[calc(100vh-3rem)]">
+      <input id="nav-drawer" type="checkbox" class="drawer-toggle" />
 
-      <div class="drawer-content flex min-h-[calc(100vh-3rem)]">
-        <div class="drawer lg:drawer-open w-full">
-          <input id="nav-drawer" type="checkbox" class="drawer-toggle" />
+      <div class="drawer-content flex min-h-[calc(100vh-3rem)] min-w-0">
+        <div class="drawer drawer-end xl:drawer-open w-full">
+          <input id="graph-drawer" type="checkbox" class="drawer-toggle" />
 
           <div class="drawer-content flex flex-col min-w-0">
             <main class="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-10 min-w-0">
@@ -204,32 +206,28 @@ const headings = extractHeadings(entry.body ?? "");
             </main>
           </div>
 
-          <div class="drawer-side z-50">
+          <div class="drawer-side z-40">
             <label
-              for="nav-drawer"
+              for="graph-drawer"
               aria-label="close sidebar"
-              class="drawer-overlay"></label>
-            <NoteNavSidebar
-              client:load
-              notes={sortedNotes}
-              currentEntry={entry}
-              categories={categories}
+              class="drawer-overlay xl:hidden"></label>
+            <NoteGraphSidebar
+              entry={entry}
+              graphNodes={graphNodes}
+              graphEdges={graphEdges}
+              forwardLinks={forwardLinks}
+              backlinks={backlinks}
             />
           </div>
         </div>
       </div>
 
-      <div class="drawer-side z-40">
-        <label
-          for="graph-drawer"
-          aria-label="close sidebar"
-          class="drawer-overlay xl:hidden"></label>
-        <NoteGraphSidebar
-          entry={entry}
-          graphNodes={graphNodes}
-          graphEdges={graphEdges}
-          forwardLinks={forwardLinks}
-          backlinks={backlinks}
+      <div class="drawer-side z-50">
+        <NoteNavSidebar
+          client:load
+          notes={sortedNotes}
+          currentEntry={entry}
+          categories={categories}
         />
       </div>
     </div>

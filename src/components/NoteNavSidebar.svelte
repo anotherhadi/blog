@@ -19,6 +19,36 @@
 
   let search = $state("");
 
+  $effect(() => {
+    const navDrawer = document.getElementById("nav-drawer") as HTMLInputElement | null;
+    if (!navDrawer) return;
+
+    const lgQuery = window.matchMedia("(min-width: 1024px)");
+
+    const overlay = document.createElement("div");
+    overlay.style.cssText =
+      "position:fixed;inset:0 0 0 14rem;background:oklch(0% 0 0/.4);z-index:51;display:none;cursor:pointer";
+    document.body.appendChild(overlay);
+
+    function update() {
+      overlay.style.display =
+        navDrawer.checked && !lgQuery.matches ? "block" : "none";
+    }
+
+    navDrawer.addEventListener("change", update);
+    lgQuery.addEventListener("change", update);
+    overlay.addEventListener("click", () => {
+      navDrawer.checked = false;
+      navDrawer.dispatchEvent(new Event("change"));
+    });
+
+    return () => {
+      navDrawer.removeEventListener("change", update);
+      lgQuery.removeEventListener("change", update);
+      overlay.remove();
+    };
+  });
+
   function getCategory(n: Note): string {
     if (n.data.category) return n.data.category;
     const parts = n.id.split("/");
@@ -66,7 +96,7 @@
 </script>
 
 <aside
-  class="w-56 shrink-0 flex flex-col border-r border-base-300/60 h-[calc(100vh-3rem)]"
+  class="w-56 shrink-0 flex flex-col border-r border-base-300/60 h-full pt-2 lg:pt-0"
   style="background: oklch(4% 0 0);"
 >
   <!-- Mobile close bar -->
