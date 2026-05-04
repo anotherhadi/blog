@@ -30,6 +30,7 @@ publishDate: 2026-05-03
 | IP         | [Shodan](https://www.shodan.io/)                       |
 |            | [Censys](https://search.censys.io/)                    |
 | Domain     | [Whois](https://www.whois.com/whois/)                  |
+|            | [crt.sh](https://crt.sh/) (certificate transparency)  |
 | Name       | [Webmii](https://webmii.com/)                          |
 |            | [BreachDirectory](https://breachdirectory.org/)        |
 |            | [LeakLookup](https://leak-lookup.com/search)           |
