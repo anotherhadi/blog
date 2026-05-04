@@ -45,8 +45,8 @@ Login with `user` / `password`. Session is fully interactive once authenticated.
 ## Brute Force
 
 ```bash
-hydra -l $user -P /usr/share/wordlists/rockyou.txt telnet://$IP
-medusa -h $IP -u $user -P /usr/share/wordlists/rockyou.txt -M telnet
+hydra -l $user -P ~/wordlists/rockyou.txt telnet://$IP
+medusa -h $IP -u $user -P ~/wordlists/rockyou.txt -M telnet
 ```
 
 Try default credentials first. Routers and embedded devices commonly ship with `admin:admin`, `root:root`, or blank passwords.

