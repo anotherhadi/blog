@@ -242,7 +242,9 @@ const headings = extractHeadings(entry.body ?? "");
       const s = document.createElement("style");
       s.id = "heading-anchor-styles";
       s.textContent = `
-        .note-content h2, .note-content h3, .note-content h4 {
+        .note-content h2:not(.link-card h2),
+        .note-content h3:not(.link-card h3),
+        .note-content h4:not(.link-card h4) {
           display: flex !important;
           align-items: center;
           flex-wrap: wrap;
