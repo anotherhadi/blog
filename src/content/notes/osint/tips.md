@@ -19,6 +19,23 @@ To find email addresses and phone numbers associated with an account, you can cl
 - [Wayback Machine](https://web.archive.org) stores over 618 billion web captures
 - [Archive.ph](https://archive.ph) creates on-demand snapshots, including for JS-heavy sites, with both a functional page and screenshot version
 
+## Google Cache
+
+Google keeps a cached version of most indexed pages. Access it with the `cache:` operator:
+
+```
+cache:example.com
+cache:example.com/page
+```
+
+If the page has been taken down or modified, the cached version may still show the original content.
+
+## Domain History
+
+[VirusTotal](https://www.virustotal.com) shows the historical DNS records, subdomains, and associated IPs for any domain — useful when a site has moved or been taken down.
+
+[ViewDNS.info](https://viewdns.info) covers WHOIS history, reverse IP, reverse MX, and port scans from a single interface.
+
 ## Bookmarklets
 
 - [K2SOsint/Bookmarklets](https://github.com/K2SOsint/Bookmarklets)
