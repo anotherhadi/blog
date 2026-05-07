@@ -6,7 +6,7 @@ import NoteTOC from "../../components/NoteTOC.astro";
 import NoteNavSidebar from "../../components/NoteNavSidebar.astro";
 import NoteGraphSidebar from "../../components/NoteGraphSidebar.astro";
 import NoteVars from "../../components/NoteVars.svelte";
-import { getCategory, extractLinks, extractExternalLinks, extractHeadings } from "../../utils/notes";
+import { getCategory, extractLinks, extractExternalLinks } from "../../utils/notes";
 
 export async function getStaticPaths() {
   const notes = await getCollection("notes");
@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings: astroHeadings } = await render(entry);
 
 const allNotes = await getCollection("notes");
 const sortedNotes = allNotes.sort((a, b) =>
@@ -60,7 +60,7 @@ const noteVars = [
   ),
 ];
 
-const headings = extractHeadings(entry.body ?? "");
+const headings = astroHeadings.map((h) => ({ depth: h.depth, text: h.text, id: h.slug }));
 const externalLinks = extractExternalLinks(entry.body ?? "");
 ---
 
