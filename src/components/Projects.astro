@@ -10,14 +10,14 @@ const latestRepos = repos.slice(0, 3);
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-12">
       <h2 class="text-4xl font-bold mb-4">Check out my latest work</h2>
-      <p class="text-lg text-base-content/70">
-        I enjoy the challenge of reimagining existing programs & scripts in my
-        own unique way.
-      </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {latestRepos.map((repo) => <GiteaProjectCard repo={repo} />)}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        latestRepos.map((repo) => (
+          <GiteaProjectCard displayBanner={false} repo={repo} />
+        ))
+      }
     </div>
 
     <div class="text-center mt-12">

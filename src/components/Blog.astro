@@ -18,14 +18,19 @@ const latestPosts = sortedPosts.slice(0, 3);
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-12">
       <h2 class="text-4xl font-bold mb-4">Latest Blog Posts</h2>
-      <p class="text-lg text-base-content/70">
-        Thoughts, insights, and tutorials on cybersecurity, OSINT, and
-        technology.
-      </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {latestPosts.map((post) => <BlogCard post={post} />)}
+      {
+        latestPosts.map((post) => (
+          <BlogCard
+            displayBanner={false}
+            displayTags={false}
+            displayDate={false}
+            post={post}
+          />
+        ))
+      }
     </div>
 
     <div class="text-center mt-12">

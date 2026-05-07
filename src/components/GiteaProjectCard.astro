@@ -2,6 +2,7 @@
 import { ExternalLink, ChevronDown } from "@lucide/astro";
 
 interface Props {
+  displayBanner: boolean;
   repo: {
     name: string;
     description: string;
@@ -34,6 +35,7 @@ const hasMultiplePlatforms = platforms.length > 1;
 <article
   class="card bg-base-100 shadow-xl border border-base-200 rounded-lg hover:shadow-2xl transition-shadow"
 >
+  { Astro.props.displayBanner && repo.banner_url && (
   <figure class="aspect-video bg-base-200 overflow-hidden">
     <img
       src={repo.banner_url}
@@ -42,6 +44,7 @@ const hasMultiplePlatforms = platforms.length > 1;
       onerror="this.parentElement.style.display='none'"
     />
   </figure>
+)}
 
   <div class="card-body">
     <h2 class="card-title hover:text-primary transition-colors">
@@ -83,7 +86,7 @@ const hasMultiplePlatforms = platforms.length > 1;
             <div
               tabindex="0"
               role="button"
-              class="btn btn-primary btn-sm gap-1"
+              class="btn btn-soft btn-primary btn-sm gap-1"
             >
               <ExternalLink class="size-4" />
               View Source
@@ -107,7 +110,7 @@ const hasMultiplePlatforms = platforms.length > 1;
             href={repo.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            class="btn btn-primary btn-sm gap-1"
+            class="btn btn-soft btn-primary btn-sm gap-1"
           >
             <ExternalLink class="size-4" />
             View on Gitea
