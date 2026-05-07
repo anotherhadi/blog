@@ -19,36 +19,6 @@
 
   let search = $state("");
 
-  $effect(() => {
-    const navDrawer = document.getElementById("nav-drawer") as HTMLInputElement | null;
-    if (!navDrawer) return;
-
-    const lgQuery = window.matchMedia("(min-width: 1024px)");
-
-    const overlay = document.createElement("div");
-    overlay.style.cssText =
-      "position:fixed;inset:0 0 0 14rem;background:oklch(0% 0 0/.4);z-index:51;display:none;cursor:pointer";
-    document.body.appendChild(overlay);
-
-    function update() {
-      overlay.style.display =
-        navDrawer.checked && !lgQuery.matches ? "block" : "none";
-    }
-
-    navDrawer.addEventListener("change", update);
-    lgQuery.addEventListener("change", update);
-    overlay.addEventListener("click", () => {
-      navDrawer.checked = false;
-      navDrawer.dispatchEvent(new Event("change"));
-    });
-
-    return () => {
-      navDrawer.removeEventListener("change", update);
-      lgQuery.removeEventListener("change", update);
-      overlay.remove();
-    };
-  });
-
   function getCategory(n: Note): string {
     if (n.data.category) return n.data.category;
     const parts = n.id.split("/");
@@ -95,25 +65,7 @@
   }
 </script>
 
-<aside
-  class="w-56 shrink-0 flex flex-col border-r border-base-300/60 h-full pt-2 lg:pt-0"
-  style="background: oklch(4% 0 0);"
->
-  <!-- Mobile close bar -->
-  <div class="lg:hidden flex items-center justify-between px-3 py-2 border-b border-base-300/40 shrink-0">
-    <span class="font-mono text-[10px] text-base-content/30 uppercase tracking-widest">nav</span>
-    <label
-      for="nav-drawer"
-      class="cursor-pointer text-base-content/30 hover:text-base-content/70 transition-colors p-1"
-      aria-label="close sidebar"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 6 6 18M6 6l12 12"/>
-      </svg>
-    </label>
-  </div>
-
-  <!-- Search -->
+<div class="flex flex-col flex-1 min-h-0">
   <div class="px-3 py-3 border-b border-base-300/40 shrink-0">
     <div
       class="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-base-200/50 border border-base-300/40 focus-within:border-base-300/70 transition-colors"
@@ -128,7 +80,6 @@
     </div>
   </div>
 
-  <!-- Nav -->
   <nav class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 py-2 space-y-px">
     {#each categories as cat}
       {@const catNotes = notes.filter(
@@ -137,7 +88,6 @@
       {#if catNotes.length > 0 || !search}
         {@const isFolder = notes.some((n) => n.id.includes("/") && getCategory(n) === cat)}
         <div>
-          <!-- Category header -->
           <div class="flex items-center w-full">
             <button
               onclick={() => toggle(cat)}
@@ -172,7 +122,6 @@
             {/if}
           </div>
 
-          <!-- Notes list -->
           {#if openCategories.includes(cat)}
             <ul
               class="ml-4 mt-0.5 pb-1 space-y-px"
@@ -200,4 +149,4 @@
       {/if}
     {/each}
   </nav>
-</aside>
+</div>

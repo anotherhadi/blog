@@ -15,6 +15,34 @@ function slugify(text: string): string {
     .replace(/ +/g, "-");
 }
 
+export function extractExternalLinks(body: string): { url: string; label: string }[] {
+  const seen = new Set<string>();
+  const links: { url: string; label: string }[] = [];
+
+  // Markdown: [label](https://...)
+  const mdRe = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
+  let m;
+  while ((m = mdRe.exec(body)) !== null) {
+    if (!seen.has(m[2])) {
+      seen.add(m[2]);
+      links.push({ url: m[2], label: m[1] });
+    }
+  }
+
+  // HTML: <a href="https://...">...</a> — use h4 content as label if present, else href host
+  const htmlRe = /<a\s[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g;
+  while ((m = htmlRe.exec(body)) !== null) {
+    const url = m[1];
+    if (seen.has(url)) continue;
+    seen.add(url);
+    const h4 = m[2].match(/<h4[^>]*>([\s\S]*?)<\/h4>/);
+    const label = h4 ? h4[1].trim() : new URL(url).hostname;
+    links.push({ url, label });
+  }
+
+  return links;
+}
+
 export function extractLinks(body: string): string[] {
   const re = /\(\/notes\/([^)#\s]+)(?:#[^)\s]*)?\)/g;
   const ids: string[] = [];

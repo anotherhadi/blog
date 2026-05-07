@@ -36,6 +36,13 @@
   --noise: 0;
 }
 
+.drawer-side > aside > astro-island {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
 .btn:not(.btn-circle):not(.btn-square) {
   @apply rounded-lg;
 }
@@ -50,7 +57,9 @@
     background: transparent;
     color: var(--color-base-content);
     text-decoration: none !important;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease;
     margin-block: 0.25rem;
   }
   .link-card::after {
@@ -60,7 +69,9 @@
     opacity: 0;
     color: var(--color-primary);
     font-size: 0.75rem;
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
     transform: translate(-4px, 4px);
     flex-shrink: 0;
   }
