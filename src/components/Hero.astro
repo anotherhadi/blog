@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, FolderCode, Key, Rss } from "@lucide/astro";
+import { FolderCode, Key, Rss } from "@lucide/astro";
 import { Image } from "astro:assets";
 import type { SocialLinks } from "../config";
 
@@ -8,7 +8,6 @@ interface Props {
   title: string;
   description: string;
   avatar: any;
-  location?: string;
   socialLinks?: SocialLinks;
   gpgKey?: string;
   rssFeed?: string;
@@ -19,18 +18,17 @@ const {
   title,
   description,
   avatar,
-  location,
   socialLinks,
   gpgKey,
   rssFeed,
 } = Astro.props;
 ---
 
-<section class="hero min-h-[65vh]">
-  <div class="hero-content flex-col lg:flex-row-reverse max-w-7xl gap-8">
+<section class="hero py-20">
+  <div class="hero-content flex-col lg:flex-row-reverse max-w-7xl gap-10">
     <div class="avatar">
       <div
-        class="w-48 ring-primary ring-offset-base-100 rounded-full ring-2 ring-offset-2"
+        class="w-32 md:w-48 ring-primary ring-offset-base-100 rounded-full ring-2 ring-offset-2"
       >
         <Image src={avatar} alt={name} />
       </div>
@@ -40,7 +38,6 @@ const {
         Hi, I'm {name}
       </h1>
       <p class="text-xl text-base-content/80 mb-2">{title}</p>
-      {location && <p class="text-base-content/60 mb-4">{location}</p>}
       <p class="text-lg leading-relaxed mb-6">
         {description}
       </p>
@@ -335,25 +332,6 @@ const {
           </div>
         )
       }
-
-      <div class="mt-12 flex flex-wrap gap-5">
-        <a href="/blog" class="btn btn-ghost gap-2">
-          Blog Posts
-          <ArrowRight class="size-4" />
-        </a>
-        <a href="/projects" class="btn btn-ghost gap-2">
-          Projects
-          <ArrowRight class="size-4" />
-        </a>
-        <a href="/notes" class="btn btn-ghost gap-2">
-          Infosec Notes
-          <ArrowRight class="size-4" />
-        </a>
-        <a href="/#contact" class="btn btn-ghost gap-2">
-          Contact Me
-          <ArrowRight class="size-4" />
-        </a>
-      </div>
     </div>
   </div>
 </section>

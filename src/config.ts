@@ -23,7 +23,6 @@ export interface SiteConfig {
   title: string;
   description: string;
   avatar: string;
-  location: string;
   socialLinks: SocialLinks;
   gpgKey?: string;
   rssFeed?: string;
@@ -39,7 +38,6 @@ export const siteConfig: SiteConfig = {
   description:
     "Infosec engineer passionate about Linux/NixOS, blockchains, OSINT & FOSS. Hacking with Go, exploring open tech, and contributing whenever I can 🐧",
   avatar: "/avatar.png",
-  location: "🇫🇷 France",
   socialLinks: {
     github: "https://github.com/anotherhadi",
     gitlab: "https://gitlab.com/anotherhadi_mirror",
