@@ -5,8 +5,6 @@ tags: ["ssh", "network", "service"]
 publishDate: 2026-05-04
 ---
 
-## Overview
-
 SSH runs on **port 22** and provides an encrypted remote shell.
 Common implementations: OpenSSH, Dropbear, Bitvise.
 

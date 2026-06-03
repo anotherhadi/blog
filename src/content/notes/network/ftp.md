@@ -5,8 +5,6 @@ tags: ["ftp", "network", "service"]
 publishDate: 2026-04-29
 ---
 
-## Overview
-
 FTP runs on **port 21** (control) and uses a secondary data channel (port 20 for active, ephemeral port for passive).
 Common implementations: vsftpd, ProFTPD, Pure-FTPd, FileZilla Server, IIS FTP.
 

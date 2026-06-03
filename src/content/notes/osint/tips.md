@@ -32,7 +32,7 @@ If the page has been taken down or modified, the cached version may still show t
 
 ## Domain History
 
-[VirusTotal](https://www.virustotal.com) shows the historical DNS records, subdomains, and associated IPs for any domain — useful when a site has moved or been taken down.
+[VirusTotal](https://www.virustotal.com) shows the historical DNS records, subdomains, and associated IPs for any domaint useful when a site has moved or been taken down.
 
 [ViewDNS.info](https://viewdns.info) covers WHOIS history, reverse IP, reverse MX, and port scans from a single interface.
 

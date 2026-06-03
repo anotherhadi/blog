@@ -44,9 +44,9 @@ tweet_id = 1234567890123456789
 timestamp_ms = (tweet_id >> 22) + 1288834974657
 ```
 
-`1288834974657` is Twitter's custom epoch (Nov 4, 2010). Works on both tweet IDs and user IDs — useful to confirm account creation date without needing profile metadata.
+`1288834974657` is Twitter's custom epoch (Nov 4, 2010). Works on both tweet IDs and user IDs: useful to confirm account creation date without needing profile metadata.
 
-Several online converters exist if you don't want to do it manually — search "snowflake id decoder".
+Several online converters exist if you don't want to do it manually: search "snowflake id decoder".
 
 ### Direct profile URL by ID
 

@@ -5,8 +5,6 @@ tags: ["rdp", "network", "service"]
 publishDate: 2026-05-04
 ---
 
-## Overview
-
 RDP (Remote Desktop Protocol) runs on **port 3389** and provides a graphical remote session.
 Common on Windows servers and workstations.
 

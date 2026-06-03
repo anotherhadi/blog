@@ -5,8 +5,6 @@ tags: ["telnet", "network", "service"]
 publishDate: 2026-05-04
 ---
 
-## Overview
-
 Telnet runs on **port 23** and transmits all data (including credentials) in **cleartext**.
 Common on embedded devices, legacy systems, routers, and IoT equipment.
 
