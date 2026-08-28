@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const lightningAddress = "hadi@hadi.icu";
+const bolt12Offer =
+  "lno1zrxq8pjw7qjlm68mtp7e3yvxee4y5xrgjhhyf2fxhlphpckrvevh50u0q2426u4t8ezfc47jxucvdej7mza4ljnq80f8q58ztwrlflsq7rh4cqsrc9n5lw39puykt4seaa0nqft67jzu0dzwqy8m30zk7t8sen8d4x9sqvcr2h2drr4vlt0plds73uph5jek9u4jv6pkzdtzv3gd5wzlnxr87c3f5n84fngr6gwxpp49qxlyzj3knwa5qts2mmfh2t5yeqa5dnvp0zu7yup0dh6nlpkl4n5ax7pfvtsn0ld95qqsgq2mwr80e08c77azxy5edrd46s";
+---
+
+<Layout title="donate - hadi's site">
+  <h1 class="text-2xl font-bold mb-4">donate</h1>
+  <p class="leading-relaxed">
+    if you want to send sats, my lightning address is:
+    <code class="text-accent">{lightningAddress}</code>
+  </p>
+
+  <p class="mt-8 leading-relaxed">
+    if your wallet can't resolve the address for some reason, here's the raw
+    bolt12 offer as a fallback:
+    <code class="text-accent break-all text-sm">{bolt12Offer}</code>
+  </p>
+</Layout>
