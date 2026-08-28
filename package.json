@@ -1,28 +1,17 @@
 {
-  "name": "anotherhadi",
+  "name": "portfolio",
   "type": "module",
   "version": "0.0.1",
   "license": "MIT",
-  "author": "Hadi <112569860+anotherhadi@users.noreply.github.com>",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "fetch-data": "bun run scripts/fetch-repos.ts"
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "5.0.4",
-    "@astrojs/rss": "^4.0.18",
-    "@astrojs/sitemap": "^3.7.2",
-    "@astrojs/svelte": "^8.1.0",
-    "@lucide/astro": "^0.552.0",
     "@tailwindcss/vite": "^4.2.4",
-    "@types/bun": "^1.3.13",
     "astro": "6.1.9",
-    "daisyui": "^5.5.19",
-"node-html-parser": "^7.1.0",
-    "svelte": "^5.55.5",
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {

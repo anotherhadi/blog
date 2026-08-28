@@ -1,33 +1,79 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Hero from "../components/Hero.astro";
-import Projects from "../components/Projects.astro";
-import Blog from "../components/Blog.astro";
-import Notes from "../components/Notes.astro";
-import Contact from "../components/Contact.astro";
-import { siteConfig } from "../config";
-import avatar from "../../public/avatar.jpg";
 ---
 
-<Layout title={`Another Hadi`} description={siteConfig.description}>
-  <main class="px-10">
-    <Hero
-      name={siteConfig.name}
-      title={siteConfig.title}
-      description={siteConfig.description}
-      avatar={avatar}
-      socialLinks={siteConfig.socialLinks}
-      gpgKey={siteConfig.gpgKey}
-      rssFeed={siteConfig.rssFeed}
-    />
+<Layout title="hadi's site">
+  <h1 class="text-2xl font-bold mb-4">hi, i'm hadi</h1>
+  <p class="mb-4 leading-relaxed">
+    infosec engineer passionate about linux/nixos, blockchains, osint & foss.
+    hacking with go, exploring open tech, and contributing whenever i can!
+  </p>
 
-    <hr class="border-base-300/30 max-w-6xl mx-auto" />
-    <Blog />
-    <hr class="border-base-300/30 max-w-6xl mx-auto" />
-    <Notes />
-    <hr class="border-base-300/30 max-w-6xl mx-auto" />
-    <Projects />
-    <hr class="border-base-300/30 max-w-6xl mx-auto" />
-    <Contact />
-  </main>
+  <h2 class="text-xl font-bold mt-8 mb-3">projects</h2>
+  <p class="mb-3 leading-relaxed">
+    i love building things myself, from scratch, just to understand how they
+    really work. a few i'm working on:
+  </p>
+  <ul class="list-disc pl-5 space-y-2 leading-relaxed lowercase">
+    <li>
+      <a
+        href="https://github.com/anotherhadi/default-creds"
+        target="_blank"
+        rel="noopener noreferrer">default-creds</a
+      >: Default Creds is a centralized, community-driven repository of
+      factory-set credentials. Designed for pentesters and security researchers,
+      it helps identify weak access points during engagement phases or audit
+      internal infrastructure before they become a security liability.
+    </li>
+    <li>
+      <a
+        href="https://github.com/anotherhadi/spilltea"
+        target="_blank"
+        rel="noopener noreferrer">spilltea</a
+      >: A minimal, terminal-based HTTP(S) proxy for pentesters and CTF players.
+      Think Burp Suite or Caido, but entirely in your terminal.
+    </li>
+    <li>
+      <a
+        href="https://github.com/anotherhadi/usbguard-tui"
+        target="_blank"
+        rel="noopener noreferrer">usbguard-tui</a
+      >: a TUI to manage USBGuard device policies without touching a config
+      file.
+    </li>
+  </ul>
+  <p class="mt-3 leading-relaxed">
+    there's plenty more on <a
+      href="https://github.com/anotherhadi"
+      target="_blank"
+      rel="noopener noreferrer">github</a
+    >, also mirrored on <a
+      href="https://git.hadi.icu"
+      target="_blank"
+      rel="noopener noreferrer">gitea</a
+    >.
+  </p>
+
+  <h2 class="text-xl font-bold mt-8 mb-3">blog</h2>
+  <p class="leading-relaxed">
+    i write about privacy, infosec and osint on
+    <a
+      href="https://medium.com/@anotherhadi"
+      target="_blank"
+      rel="noopener noreferrer">my blog on medium</a
+    > and i also keep a pile of cybersecurity cheatsheets, in
+    <a
+      href="https://github.com/anotherhadi/sec-notes"
+      target="_blank"
+      rel="noopener noreferrer">sec-notes</a
+    >.
+  </p>
+
+  <p class="mt-8 leading-relaxed text-subtext">
+    if you want to support what i do, there's <a
+      href="https://ko-fi.com/anotherhadi"
+      target="_blank"
+      rel="noopener noreferrer">ko-fi</a
+    >.
+  </p>
 </Layout>

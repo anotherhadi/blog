@@ -1,115 +1,38 @@
 ---
-import "../styles/global.css";
-import { ClientRouter } from "astro:transitions";
 import Oneko from "../components/Oneko.astro";
-import Console from "../components/Console.astro";
-import Navbar from "../components/Navbar.astro";
+import "../styles/global.css";
 
 interface Props {
   title?: string;
-  description?: string;
 }
 
-const {
-  title = "Another Hadi",
-  description = "Infosec engineer passionate about Linux/NixOS, blockchains, OSINT & FOSS. Hacking with Go, exploring open tech, and contributing whenever I can 🐧",
-} = Astro.props;
-
-const anim = {
-  old: { name: "blurFadeOut", duration: "0.1s", easing: "ease-in-out", fillMode: "forwards" },
-  new: { name: "blurFadeIn", duration: "0.1s", easing: "ease-in-out", fillMode: "backwards" },
-};
-const pageTransition = { forwards: anim, backwards: anim };
-
-const origin = Astro.url.origin;
+const { title = "hadi's site" } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" transition:animate={pageTransition} data-theme="hadi">
+<html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="description" content={title} />
     <title>{title}</title>
-
-    <ClientRouter />
-
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={origin} />
-    <meta property="og:image" content={`${origin}/images/og_home.png`} />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={`${origin}/images/og_home.png`} />
-
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title="Another Hadi RSS Feed"
-      href="/rss.xml"
-    />
-
-    <script
-      is:inline
-      defer
-      src="https://umami.hadi.icu/script.js"
-      data-website-id="91b0c3a1-130a-4974-be47-078bc092cec8"
-      data-domains="hadi.icu,www.hadi.icu"></script>
   </head>
-  <body class="min-h-screen pt-12">
-    <Navbar />
-    <slot />
-
+  <body class="min-h-screen flex flex-col items-center px-4">
+    <div class="w-full max-w-[65ch] flex-1 flex flex-col">
+      <nav class="mt-8 flex items-center gap-3">
+        <div id="oneko-track" class="flex-1 relative h-8 pointer-events-none"></div>
+        <a href="/">home</a>
+        <a href="https://medium.com/@anotherhadi" target="_blank" rel="noopener noreferrer">blog</a>
+        <a href="/contact">contact</a>
+      </nav>
+      <main class="flex-1 py-10">
+        <slot />
+      </main>
+    </div>
+    <footer class="w-full max-w-[65ch] py-6 text-center text-subtext">
+      <p>&copy; 2026 hadi</p>
+    </footer>
     <Oneko />
-    <Console />
-
-    <style is:global>
-      html {
-        scroll-behavior: smooth;
-      }
-
-      @keyframes pageLoadBlurFade {
-        0% {
-          opacity: 0;
-          filter: blur(8px);
-        }
-        100% {
-          opacity: 1;
-          filter: blur(0px);
-        }
-      }
-
-      html {
-        animation: pageLoadBlurFade 0.1s ease-in-out;
-        animation-fill-mode: both;
-      }
-
-      @keyframes blurFadeIn {
-        0% {
-          opacity: 0;
-          filter: blur(10px);
-        }
-        100% {
-          opacity: 1;
-          filter: blur(0px);
-        }
-      }
-
-      @keyframes blurFadeOut {
-        0% {
-          opacity: 1;
-          filter: blur(0px);
-        }
-        100% {
-          opacity: 0;
-          filter: blur(10px);
-        }
-      }
-    </style>
   </body>
 </html>
